@@ -71,3 +71,12 @@ To publish an exported tour automatically as the site's default, rename your exp
 ## Troubleshooting
 
 If the panorama viewer is blank, check internet connectivity (A-Frame CDN) and browser Console. If VR entry does not work, use Meta Quest Browser over HTTPS rather than `file://` or plain HTTP. If a hotspot is missing, check its target scene ID and yaw/pitch. If a local image vanishes after refresh, upload it to your repo's `assets/` folder and set a persistent relative URL.
+
+
+## Poorna Market hybrid interface (2026 update)
+
+The default project is **Poorna Market — The Living Market Spine**. Its eight provisional viewpoints are organized into Street, Interior and Facilities zones. The dashboard offers Guided Walkthrough and Explore Freely; the viewer provides a contextual chapter panel, categories, and a market map with example camera positions. The VR menu includes a mode toggle and viewpoint controls.
+
+**Important:** All supplied panoramas are re-used architectural demo photographs, NOT actual Poorna Market renders. The schematic floor/map and coordinate percentages are illustrative, NOT the final site plan or measured camera locations. Replace each scene's `image`, `x`, `y` and hotspot `yaw`/`pitch` values with your Enscape panoramas and finalized coordinates when they become available. Retain `zone`, `chapter` and `info` fields for the UI.
+
+The editor remains a local browser editor. Export JSON, then commit it as `tour.json` and upload image files to `assets/` to publish them.

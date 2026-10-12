@@ -10,21 +10,55 @@ function renderProjects(){const grid=$('#projectGrid');grid.replaceChildren();co
 let teleportBusy=false;async function selectScene(id){const destination=scene(id);if(!destination||teleportBusy)return;if(id===currentId){renderMiniMap();return;}teleportBusy=true;const vr=$('#vrScene').is('vr-mode'),fade=$('#teleportFade');if(!vr)fade.classList.add('active');const image=new Image();image.src=destination.image;try{await Promise.race([image.decode(),new Promise(resolve=>setTimeout(resolve,2500))])}catch(e){}await new Promise(resolve=>setTimeout(resolve,vr?50:210));currentId=id;renderScene();if(!vr){setTimeout(()=>fade.classList.remove('active'),80)}teleportBusy=false;}
 function renderScene(){const s=scene(currentId)||project.scenes[0];if(!s)return;currentId=s.id;$('#projectTitle').textContent=project.title;$('#roomTitle').textContent=`${s.name} · ${project.scenes.indexOf(s)+1} / ${project.scenes.length} · SAMPLE PANORAMA`;$('#modeIndicator').textContent=exploreMode==='guided'?'GUIDED WALKTHROUGH':'FREE EXPLORATION';$('#chapterLabel').textContent=`${s.chapter||'MARKET EXPERIENCE'} / ${project.scenes.indexOf(s)+1} OF ${project.scenes.length}`.toUpperCase();$('#chapterText').textContent=s.info||'Explore the market viewpoint.';$('.chapter-panel').classList.toggle('guided',exploreMode==='guided');$('.explore-tools').style.display=exploreMode==='free'?'flex':'none';const sky=$('#sky');if(sky.getAttribute('src')!==s.image)sky.setAttribute('src',s.image);const bar=$('#sceneBar');bar.replaceChildren();project.scenes.filter(item=>exploreMode==='guided'||sceneFilter==='all'||(item.zone||'street')===sceneFilter).forEach((item,i)=>{const b=el('button','scene-pill'+(item.id===s.id?' selected':''),`${String(i+1).padStart(2,'0')}  ${item.name}`);b.onclick=()=>selectScene(item.id);bar.append(b)});renderWorldHotspots();renderVRMenu();renderMiniMap();renderVRMiniMap();}
 function renderMiniMap(){const pins=$('#miniMapPins');if(!pins)return;pins.replaceChildren();project.scenes.forEach((s,i)=>{const b=el('button','mini-pin '+(s.zone||'street')+(s.id===currentId?' current':''),String(i+1));b.style.left=Math.min(92,Math.max(8,Number(s.x)||45))+'%';b.style.top=Math.min(90,Math.max(8,Number(s.y)||45))+'%';b.title='Teleport to '+s.name;b.setAttribute('aria-label',b.title);b.onclick=()=>selectScene(s.id);pins.append(b)});$('#miniLocation').textContent=scene(currentId)?.name||'Unknown';}
-function renderVRMiniMap(){const root=$('#vrMiniMap');if(!root)return;root.replaceChildren();if(!$('#vrScene').is('vr-mode'))return;const bg=document.createElement('a-entity');bg.setAttribute('geometry','primitive: plane; width: 0.8; height: 0.58');bg.setAttribute('material','color: #132f3b; shader: flat; opacity: .94; side: double');root.append(bg);const title=document.createElement('a-entity');title.setAttribute('position','0 .23 .012');title.setAttribute('text',{value:'MARKET MAP (DEMO)',color:'#78d7c4',align:'center',width:.65});root.append(title);project.scenes.forEach((s,i)=>{const x=(Math.min(92,Math.max(8,Number(s.x)||45))/100-.5)*.70,y=(.5-Math.min(90,Math.max(8,Number(s.y)||45))/100)*.34;const b=document.createElement('a-entity');b.classList.add('vr-control');b.setAttribute('position',x+' '+y+' .025');b.setAttribute('geometry','primitive: circle; radius: '+(s.id===currentId?.034:.025));b.setAttribute('material','color: '+(s.id===currentId?'#78d7c4':s.zone==='interior'?'#a4586f':'#377b89')+'; shader: flat; side: double');b.setAttribute('text',{value:String(i+1),color:'#ffffff',align:'center',width:.13,zOffset:.012});b.addEventListener('click',()=>selectScene(s.id));root.append(b)});const caption=document.createElement('a-entity');caption.setAttribute('position','0 -.24 .015');caption.setAttribute('text',{value:scene(currentId)?.name||'',color:'#ffffff',align:'center',width:.65});root.append(caption);}
+function renderVRMiniMap(){
+ const root=$('#vrMiniMap');if(!root)return;
+ root.replaceChildren();if(!$('#vrScene')?.is('vr-mode'))return;
+ const bg=document.createElement('a-entity');
+ bg.setObject3D('mesh',new THREE.Mesh(new THREE.PlaneGeometry(.84,.66),new THREE.MeshBasicMaterial({color:'#132f3b',transparent:true,opacity:.95,side:THREE.DoubleSide})));
+ root.append(bg);
+ const title=document.createElement('a-entity');title.setAttribute('position','0 .263 .02');
+ title.setObject3D('mesh',makeCanvasPlane('MARKET MAP (DEMO)',.75,.07,'#1a4450'));root.append(title);
+ project.scenes.forEach((s,i)=>{
+  const x=(Math.min(92,Math.max(8,Number(s.x)||45))/100-.5)*.70;
+  const y=(.5-Math.min(90,Math.max(8,Number(s.y)||45))/100)*.33;
+  const pin=document.createElement('a-entity');pin.classList.add('vr-control');
+  pin.setAttribute('position',x.toFixed(3)+' '+y.toFixed(3)+' .025');
+  const color=s.id===currentId?'#78d7c4':s.zone==='interior'?'#a4586f':'#377b89';
+  const mesh=new THREE.Mesh(new THREE.CircleGeometry(s.id===currentId?.038:.029,24),new THREE.MeshBasicMaterial({color,side:THREE.DoubleSide}));
+  pin.setObject3D('mesh',mesh);pin.addEventListener('click',()=>selectScene(s.id));root.append(pin);
+ });
+ const foot=document.createElement('a-entity');foot.setAttribute('position','0 -.275 .022');
+ foot.setObject3D('mesh',makeCanvasPlane(scene(currentId)?.name||'Location',.75,.09,'#1a4450'));root.append(foot);
+}
 function positionVRMiniMap(){const root=$('#vrMiniMap'),camera=$('#camera')?.object3D;if(!root||!camera)return;const at=new THREE.Vector3(),rot=new THREE.Quaternion();camera.getWorldPosition(at);camera.getWorldQuaternion(rot);root.object3D.position.copy(at).add(new THREE.Vector3(-.72,-.45,-1.65).applyQuaternion(rot));root.object3D.quaternion.copy(rot);root.setAttribute('visible','true');}
 function pos(yaw,pitch,r=8){const ya=yaw*Math.PI/180,pi=pitch*Math.PI/180;return `${(r*Math.sin(ya)*Math.cos(pi)).toFixed(3)} ${(r*Math.sin(pi)).toFixed(3)} ${(-r*Math.cos(ya)*Math.cos(pi)).toFixed(3)}`}
+
+function makeCanvasPlane(label,width,height,bg='#24505a',fg='#ffffff'){
+ const canvas=document.createElement('canvas');
+ canvas.width=1024;canvas.height=256;
+ const ctx=canvas.getContext('2d');
+ ctx.fillStyle=bg;ctx.beginPath();ctx.roundRect(5,5,1014,246,28);ctx.fill();
+ ctx.strokeStyle='#78d7c4';ctx.lineWidth=5;ctx.stroke();
+ ctx.fillStyle=fg;ctx.textAlign='center';ctx.textBaseline='middle';
+ const str=String(label||'').slice(0,45);
+ let size=76;ctx.font='600 '+size+'px Arial,sans-serif';
+ while(ctx.measureText(str).width>900&&size>32){size-=3;ctx.font='600 '+size+'px Arial,sans-serif'}
+ ctx.fillText(str,512,130,900);
+ const texture=new THREE.CanvasTexture(canvas);
+ texture.colorSpace=THREE.SRGBColorSpace;
+ const material=new THREE.MeshBasicMaterial({map:texture,transparent:true,side:THREE.DoubleSide,depthWrite:false});
+ const mesh=new THREE.Mesh(new THREE.PlaneGeometry(width,height),material);
+ mesh.userData.disposeCanvasTexture=()=>{mesh.geometry.dispose();texture.dispose();material.dispose()};
+ return mesh;
+}
 function worldButton(parent,position,label,onClick,{cls='hotspot',width=1.4,background='#123744',height=.42}={}){
  const node=document.createElement('a-entity');node.classList.add(cls);
  node.setAttribute('position',position);
- node.setAttribute('geometry',`primitive: plane; width: ${width}; height: ${height}`);
- node.setAttribute('material',`color: ${background}; shader: flat; opacity: .96; side: double`);
- // A-Frame text.width uses WORLD UNITS, not a multiplier of the button width.
- // The previous value (width * 4.5) caused enormous overlapping labels in Quest 3.
- node.setAttribute('text',{value:String(label),color:'#ffffff',align:'center',anchor:'center',baseline:'center',width:Math.max(.5,width*.87),wrapCount:24,zOffset:.015});
+ node.setObject3D('mesh',makeCanvasPlane(label,width,height,background));
  if(cls==='hotspot')node.setAttribute('billboard','');
  node.addEventListener('click',onClick);
- node.addEventListener('mouseenter',()=>node.setAttribute('material','color','#167d75'));
- node.addEventListener('mouseleave',()=>node.setAttribute('material','color',background));
+ node.addEventListener('mouseenter',()=>node.object3D.getObjectByProperty('type','Mesh')?.material?.color?.set('#b5fff0'));
+ node.addEventListener('mouseleave',()=>node.object3D.getObjectByProperty('type','Mesh')?.material?.color?.set('#ffffff'));
  parent.append(node);return node;
 }
 function renderWorldHotspots(){

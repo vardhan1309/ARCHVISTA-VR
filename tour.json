@@ -1,0 +1,84 @@
+{
+  "title": "Courtyard Residence",
+  "description": "Four architectural viewpoints",
+  "scenes": [
+    {
+      "id": "atrium",
+      "name": "Atrium",
+      "image": "assets/atrium.jpg",
+      "x": 30,
+      "y": 43,
+      "hotspots": [
+        {
+          "id": "a1",
+          "target": "lounge",
+          "label": "Go to Lounge",
+          "yaw": 45,
+          "pitch": -6
+        },
+        {
+          "id": "a2",
+          "target": "gallery",
+          "label": "Go to Gallery",
+          "yaw": -55,
+          "pitch": -4
+        }
+      ]
+    },
+    {
+      "id": "lounge",
+      "name": "Lounge",
+      "image": "assets/lounge.jpg",
+      "x": 67,
+      "y": 32,
+      "hotspots": [
+        {
+          "id": "b1",
+          "target": "atrium",
+          "label": "Back to Atrium",
+          "yaw": -55,
+          "pitch": -6
+        },
+        {
+          "id": "b2",
+          "target": "terrace",
+          "label": "Go to Terrace",
+          "yaw": 58,
+          "pitch": -5
+        }
+      ]
+    },
+    {
+      "id": "gallery",
+      "name": "Gallery",
+      "image": "assets/gallery.jpg",
+      "x": 66,
+      "y": 63,
+      "hotspots": [
+        {
+          "id": "c1",
+          "target": "atrium",
+          "label": "Back to Atrium",
+          "yaw": 30,
+          "pitch": -5
+        }
+      ]
+    },
+    {
+      "id": "terrace",
+      "name": "Terrace",
+      "image": "assets/terrace.jpg",
+      "x": 74,
+      "y": 82,
+      "hotspots": [
+        {
+          "id": "d1",
+          "target": "lounge",
+          "label": "Back to Lounge",
+          "yaw": -35,
+          "pitch": -5
+        }
+      ]
+    }
+  ]
+}

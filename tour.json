@@ -1,205 +1,141 @@
 {
-  "title": "Poorna Market — The Living Market Spine",
-  "description": "A conceptual VR tour of redeveloped Poorna Market in Visakhapatnam. Sample panoramas and provisional locations.",
+  "title": "Poorna Market — Linked Sample Experiences",
+  "description": "Five connected sample 360° viewpoints for street and interior exploration. Illustrative locations; not a measured redevelopment plan.",
   "scenes": [
     {
       "id": "arrival",
       "name": "Arrival Court",
       "zone": "street",
       "chapter": "Urban Arrival",
-      "info": "Begin at the proposed market threshold and understand pedestrian entry.",
-      "image": "assets/atrium.jpg",
-      "x": 14,
-      "y": 82,
+      "info": "Sample arrival panorama. This is not the actual Poorna Market redevelopment.",
+      "image": "assets/arrival-court.jpg",
+      "x": 12,
+      "y": 78,
       "hotspots": [
         {
-          "id": "h1",
-          "target": "street",
-          "label": "To Shopping Street",
-          "yaw": 30,
+          "id": "a1",
+          "target": "walkway",
+          "label": "Side Entrance Walkway",
+          "yaw": 35,
           "pitch": -7
+        },
+        {
+          "id": "a2",
+          "target": "market",
+          "label": "Fresh Produce Market",
+          "yaw": 65,
+          "pitch": -6
         }
       ]
     },
     {
-      "id": "street",
-      "name": "Pedestrian Shopping Street",
+      "id": "walkway",
+      "name": "Side Entrance Walkway",
       "zone": "street",
-      "chapter": "Street Redevelopment",
-      "info": "Explore market-edge shops, shaded walking space and organized vending.",
-      "image": "assets/terrace.jpg",
-      "x": 28,
-      "y": 50,
+      "chapter": "Pedestrian Access",
+      "info": "Sample street-level walkway, linked to the arrival and fresh market.",
+      "image": "assets/side-entrance-walkway.jpg",
+      "x": 26,
+      "y": 62,
       "hotspots": [
         {
-          "id": "h2",
+          "id": "b1",
           "target": "arrival",
-          "label": "Arrival Court",
-          "yaw": -70,
+          "label": "Return to Arrival",
+          "yaw": -50,
           "pitch": -6
         },
         {
-          "id": "h3",
-          "target": "spine",
-          "label": "Market Spine",
-          "yaw": 38,
-          "pitch": -7
-        }
-      ]
-    },
-    {
-      "id": "spine",
-      "name": "Living Market Spine",
-      "zone": "street",
-      "chapter": "Market Threshold",
-      "info": "The proposed pedestrian circulation spine connects shops, vendor edges and public nodes.",
-      "image": "assets/gallery.jpg",
-      "x": 50,
-      "y": 49,
-      "hotspots": [
-        {
-          "id": "h4",
-          "target": "street",
-          "label": "Shopping Street",
-          "yaw": -65,
-          "pitch": -7
-        },
-        {
-          "id": "h5",
-          "target": "fresh",
-          "label": "Fresh Market",
-          "yaw": 42,
-          "pitch": -6
-        },
-        {
-          "id": "h6",
-          "target": "court",
-          "label": "Market Court",
-          "yaw": 78,
-          "pitch": -6
-        }
-      ]
-    },
-    {
-      "id": "fresh",
-      "name": "Fresh Produce Market",
-      "zone": "interior",
-      "chapter": "Market Interiors",
-      "info": "Demonstration zone for fruit, vegetable and flower vendors. Image is a placeholder.",
-      "image": "assets/lounge.jpg",
-      "x": 38,
-      "y": 25,
-      "hotspots": [
-        {
-          "id": "h7",
-          "target": "spine",
-          "label": "Back to Spine",
-          "yaw": -55,
-          "pitch": -6
-        },
-        {
-          "id": "h8",
-          "target": "grocery",
-          "label": "Dry Goods",
-          "yaw": 48,
-          "pitch": -6
-        }
-      ]
-    },
-    {
-      "id": "grocery",
-      "name": "Dry & Grocery Market",
-      "zone": "interior",
-      "chapter": "Market Interiors",
-      "info": "Explore organized dry goods, grains, spices and household retail.",
-      "image": "assets/atrium.jpg",
-      "x": 61,
-      "y": 24,
-      "hotspots": [
-        {
-          "id": "h9",
-          "target": "fresh",
-          "label": "Fresh Produce",
-          "yaw": -54,
-          "pitch": -6
-        },
-        {
-          "id": "h10",
-          "target": "court",
-          "label": "Market Court",
-          "yaw": 51,
-          "pitch": -6
-        }
-      ]
-    },
-    {
-      "id": "court",
-      "name": "Community Market Court",
-      "zone": "interior",
-      "chapter": "Public Life",
-      "info": "Public gathering, seating and community interaction at the heart of the scheme.",
-      "image": "assets/terrace.jpg",
-      "x": 66,
-      "y": 55,
-      "hotspots": [
-        {
-          "id": "h11",
-          "target": "spine",
-          "label": "Market Spine",
-          "yaw": -44,
-          "pitch": -6
-        },
-        {
-          "id": "h12",
-          "target": "craft",
-          "label": "Craft Court",
-          "yaw": 55,
+          "id": "b2",
+          "target": "market",
+          "label": "Fresh Produce Market",
+          "yaw": 30,
           "pitch": -5
         }
       ]
     },
     {
-      "id": "craft",
-      "name": "Craft & Community Zone",
+      "id": "market",
+      "name": "Fresh Produce Market",
       "zone": "interior",
-      "chapter": "Public Life",
-      "info": "Potential workshops, craft displays and social interaction.",
-      "image": "assets/gallery.jpg",
-      "x": 81,
-      "y": 32,
+      "chapter": "Market Interiors",
+      "info": "Sample produce market panorama. Actual Enscape design render to be added later.",
+      "image": "assets/fresh-produce-market.jpg",
+      "x": 48,
+      "y": 48,
       "hotspots": [
         {
-          "id": "h13",
-          "target": "court",
-          "label": "Market Court",
-          "yaw": -46,
-          "pitch": -6
+          "id": "c1",
+          "target": "walkway",
+          "label": "Side Entrance",
+          "yaw": -40,
+          "pitch": -5
         },
         {
-          "id": "h14",
-          "target": "services",
-          "label": "Facilities",
-          "yaw": 64,
-          "pitch": -7
+          "id": "c2",
+          "target": "community",
+          "label": "Community Interior",
+          "yaw": 42,
+          "pitch": -5
+        },
+        {
+          "id": "c3",
+          "target": "lounge",
+          "label": "Lounge Interior",
+          "yaw": 77,
+          "pitch": -6
         }
       ]
     },
     {
-      "id": "services",
-      "name": "Amenities & Service Access",
-      "zone": "facilities",
-      "chapter": "Services",
-      "info": "View access for deliveries, support facilities and administration.",
-      "image": "assets/lounge.jpg",
-      "x": 87,
-      "y": 78,
+      "id": "community",
+      "name": "Community / Craft Interior",
+      "zone": "interior",
+      "chapter": "Community",
+      "info": "Sample indoor community/craft space for demonstrating room links.",
+      "image": "assets/community-craft-interior.jpg",
+      "x": 70,
+      "y": 32,
       "hotspots": [
         {
-          "id": "h15",
-          "target": "craft",
-          "label": "Craft Zone",
-          "yaw": -43,
+          "id": "d1",
+          "target": "market",
+          "label": "Fresh Produce",
+          "yaw": -45,
           "pitch": -6
+        },
+        {
+          "id": "d2",
+          "target": "lounge",
+          "label": "Lounge Interior",
+          "yaw": 39,
+          "pitch": -5
+        }
+      ]
+    },
+    {
+      "id": "lounge",
+      "name": "Lounge Interior",
+      "zone": "interior",
+      "chapter": "Interior Experience",
+      "info": "Sample lounge panorama; not a final market space or architectural design.",
+      "image": "assets/lounge-interior.jpg",
+      "x": 82,
+      "y": 56,
+      "hotspots": [
+        {
+          "id": "e1",
+          "target": "market",
+          "label": "Fresh Produce",
+          "yaw": -65,
+          "pitch": -5
+        },
+        {
+          "id": "e2",
+          "target": "community",
+          "label": "Community Interior",
+          "yaw": -25,
+          "pitch": -5
         }
       ]
     }

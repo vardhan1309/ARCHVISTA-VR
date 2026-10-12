@@ -10,12 +10,77 @@ function renderProjects(){const grid=$('#projectGrid');grid.replaceChildren();co
 function selectScene(id){if(!scene(id))return;currentId=id;renderScene();}
 function renderScene(){const s=scene(currentId)||project.scenes[0];if(!s)return;currentId=s.id;$('#projectTitle').textContent=project.title;$('#roomTitle').textContent=`${s.name} · ${project.scenes.indexOf(s)+1} / ${project.scenes.length} · SAMPLE PANORAMA`;$('#modeIndicator').textContent=exploreMode==='guided'?'GUIDED WALKTHROUGH':'FREE EXPLORATION';$('#chapterLabel').textContent=`${s.chapter||'MARKET EXPERIENCE'} / ${project.scenes.indexOf(s)+1} OF ${project.scenes.length}`.toUpperCase();$('#chapterText').textContent=s.info||'Explore the market viewpoint.';$('.chapter-panel').classList.toggle('guided',exploreMode==='guided');$('.explore-tools').style.display=exploreMode==='free'?'flex':'none';const sky=$('#sky');if(sky.getAttribute('src')!==s.image)sky.setAttribute('src',s.image);const bar=$('#sceneBar');bar.replaceChildren();project.scenes.filter(item=>exploreMode==='guided'||sceneFilter==='all'||(item.zone||'street')===sceneFilter).forEach((item,i)=>{const b=el('button','scene-pill'+(item.id===s.id?' selected':''),`${String(i+1).padStart(2,'0')}  ${item.name}`);b.onclick=()=>selectScene(item.id);bar.append(b)});renderWorldHotspots();renderVRMenu();}
 function pos(yaw,pitch,r=8){const ya=yaw*Math.PI/180,pi=pitch*Math.PI/180;return `${(r*Math.sin(ya)*Math.cos(pi)).toFixed(3)} ${(r*Math.sin(pi)).toFixed(3)} ${(-r*Math.cos(ya)*Math.cos(pi)).toFixed(3)}`}
-function worldButton(parent,position,label,onClick,{cls='hotspot',width=1.4,background='#123744'}={}){const node=document.createElement('a-entity');node.classList.add(cls);node.setAttribute('position',position);node.setAttribute('geometry',`primitive: plane; width: ${width}; height: 0.43`);node.setAttribute('material',`color: ${background}; shader: flat; opacity: .92; side: double`);node.setAttribute('text',`value: ${label}; color: #ffffff; align: center; width: ${width*4.5}; wrapCount: 26`);node.setAttribute('billboard','');node.addEventListener('click',onClick);node.addEventListener('mouseenter',()=>node.setAttribute('material','color','#167d75'));node.addEventListener('mouseleave',()=>node.setAttribute('material','color',background));parent.append(node);return node}
-function renderWorldHotspots(){const root=$('#sceneHotspots');root.replaceChildren();const s=scene(currentId);s.hotspots.forEach(h=>{if(!scene(h.target))return;worldButton(root,pos(Number(h.yaw),Number(h.pitch)),h.label||scene(h.target).name,()=>selectScene(h.target))})}
-// Billboard faces the headset in VR while remaining anchored at the intended spatial direction.
-if(window.AFRAME && !AFRAME.components.billboard){AFRAME.registerComponent('billboard',{tick(){const cam=this.el.sceneEl.camera;if(cam&&this.el.object3D)this.el.object3D.lookAt(cam.getWorldPosition(new THREE.Vector3()))}})}
-function renderVRMenu(){const root=$('#vrMenu');root.replaceChildren();if(!menuVisible)return;const items=[{label:exploreMode==='guided'?'Switch to Free':'Switch to Guided',action:()=>setExploreMode(exploreMode==='guided'?'free':'guided',false)},{label:'Previous viewpoint',action:()=>stepTour(-1)},{label:'Next viewpoint',action:()=>stepTour(1)},...project.scenes.map(s=>({label:s.name,action:()=>selectScene(s.id)})),{label:'Close menu',action:()=>toggleVRMenu(false)}];const count=items.length;const panel=document.createElement('a-entity');panel.setAttribute('geometry',`primitive: plane; width: 2.1; height: ${count*.42+.4}`);panel.setAttribute('material','color:#102531;shader:flat;opacity:.94;side:double');panel.setAttribute('position',`0 0 0`);panel.setAttribute('billboard','');root.append(panel);items.forEach((x,i)=>worldButton(root,`0 ${((count-1)/2-i)*.43} .02`,x.label,x.action,{cls:'vr-control',width:1.85,background:'#24505a'}))}
-function toggleVRMenu(visible=!menuVisible){menuVisible=visible;$('#vrMenu').setAttribute('visible',visible);if(visible){const camera=$('#camera').object3D;const yaw=(camera.rotation.y||0);const root=$('#vrMenu').object3D;root.position.set(-Math.sin(yaw)*1.7,-.37,-Math.cos(yaw)*1.7)}renderVRMenu();notify(visible?'VR menu open — aim and trigger to select':'VR menu closed')}
+function worldButton(parent,position,label,onClick,{cls='hotspot',width=1.4,background='#123744',height=.42}={}){
+ const node=document.createElement('a-entity');node.classList.add(cls);
+ node.setAttribute('position',position);
+ node.setAttribute('geometry',`primitive: plane; width: ${width}; height: ${height}`);
+ node.setAttribute('material',`color: ${background}; shader: flat; opacity: .96; side: double`);
+ // A-Frame text.width uses WORLD UNITS, not a multiplier of the button width.
+ // The previous value (width * 4.5) caused enormous overlapping labels in Quest 3.
+ node.setAttribute('text',{value:String(label),color:'#ffffff',align:'center',anchor:'center',baseline:'center',width:Math.max(.5,width*.87),wrapCount:24,zOffset:.015});
+ if(cls==='hotspot')node.setAttribute('billboard','');
+ node.addEventListener('click',onClick);
+ node.addEventListener('mouseenter',()=>node.setAttribute('material','color','#167d75'));
+ node.addEventListener('mouseleave',()=>node.setAttribute('material','color',background));
+ parent.append(node);return node;
+}
+function renderWorldHotspots(){
+ const root=$('#sceneHotspots');root.replaceChildren();const s=scene(currentId);
+ (s?.hotspots||[]).forEach(h=>{if(!scene(h.target))return;
+ worldButton(root,pos(Number(h.yaw),Number(h.pitch)),h.label||scene(h.target).name,()=>selectScene(h.target));
+ });
+}
+if(window.AFRAME&&!AFRAME.components.billboard){
+ AFRAME.registerComponent('billboard',{tick(){const cam=this.el.sceneEl.camera;
+  if(cam&&this.el.object3D)this.el.object3D.lookAt(cam.getWorldPosition(new THREE.Vector3()));
+ }});
+}
+let vrMenuPage='home',vrScenePage=0;
+function renderVRMenu(){
+ const root=$('#vrMenu');root.replaceChildren();if(!menuVisible)return;
+ let items;
+ if(vrMenuPage==='scenes'){
+  const pageSize=3,maxPage=Math.max(0,Math.ceil(project.scenes.length/pageSize)-1);
+  vrScenePage=Math.min(vrScenePage,maxPage);
+  const shown=project.scenes.slice(vrScenePage*pageSize,vrScenePage*pageSize+pageSize);
+  items=shown.map(item=>({label:item.name,action:()=>{selectScene(item.id);toggleVRMenu(false)}}));
+  items.push({label:`More locations (${vrScenePage+1}/${maxPage+1})`,action:()=>{vrScenePage=(vrScenePage+1)%(maxPage+1);renderVRMenu()}});
+  items.push({label:'Back to menu',action:()=>{vrMenuPage='home';renderVRMenu()}});
+ }else{
+  items=[
+   {label:'Next viewpoint',action:()=>{stepTour(1);toggleVRMenu(false)}},
+   {label:'Previous viewpoint',action:()=>{stepTour(-1);toggleVRMenu(false)}},
+   {label:'Choose location',action:()=>{vrScenePage=0;vrMenuPage='scenes';renderVRMenu()}},
+   {label:exploreMode==='guided'?'Explore freely':'Guided walkthrough',action:()=>{setExploreMode(exploreMode==='guided'?'free':'guided',false);renderVRMenu()}},
+   {label:'Close menu',action:()=>toggleVRMenu(false)}
+  ];
+ }
+ const w=1.75,rowHeight=.32,panelHeight=items.length*.35+.26;
+ const panel=document.createElement('a-entity');
+ panel.setAttribute('geometry',`primitive: plane; width: ${w+.22}; height: ${panelHeight}`);
+ panel.setAttribute('material','color:#102531;shader:flat;opacity:.95;side:double');
+ panel.setAttribute('position','0 0 -0.018');root.append(panel);
+ items.forEach((item,i)=>{
+  const y=((items.length-1)/2-i)*.35;
+  worldButton(root,`0 ${y.toFixed(3)} 0.014`,item.label,item.action,{cls:'vr-control',width:w,background:'#24505a',height:.30});
+ });
+}
+function toggleVRMenu(visible=!menuVisible){
+ menuVisible=visible;
+ const menu=$('#vrMenu');menu.setAttribute('visible',visible);
+ if(visible){
+  const camera=$('#camera').object3D;
+  const worldPos=new THREE.Vector3(),direction=new THREE.Vector3(),rotation=new THREE.Quaternion();
+  camera.getWorldPosition(worldPos);camera.getWorldDirection(direction);camera.getWorldQuaternion(rotation);
+  // Place a compact panel in front of the current headset direction.
+  const object=menu.object3D;
+  object.position.copy(worldPos).addScaledVector(direction,2.2);
+  object.quaternion.copy(rotation);
+  vrMenuPage='home';
+ }
+ renderVRMenu();
+ notify(visible?'VR menu ready — point and trigger to select':'VR menu closed');
+}
 function drawPlan(){const pins=$('#planPins'),list=$('#planSceneList');pins.replaceChildren();list.replaceChildren();project.scenes.forEach((s,i)=>{const btn=el('button','plan-pin '+(s.zone||'street')+(s.id===currentId?' active':''),String(i+1));btn.style.left=`${Math.min(92,Math.max(8,s.x??(20+i*15)))}%`;btn.style.top=`${Math.min(90,Math.max(8,s.y??(25+i*14)))}%`;btn.title=s.name;btn.style.display=mapFilter!=='all'&&(s.zone||'street')!==mapFilter?'none':'';btn.onclick=()=>{selectScene(s.id);closeFloor()};pins.append(btn);const row=el('button',(s.id===currentId?'active ':'')+(mapFilter!=='all'&&(s.zone||'street')!==mapFilter?'hidden-filter':''),`${String(i+1).padStart(2,'0')}  [${s.zone||'street'}] ${s.name} ↗`);row.onclick=()=>{selectScene(s.id);closeFloor()};list.append(row)})}
 function openFloor(){drawPlan();$('#floorModal').classList.remove('hidden')}function closeFloor(){$('#floorModal').classList.add('hidden')}
 function editSelect(id){editingId=id;renderEditor()}
@@ -28,6 +93,6 @@ function validate(data){if(!data||typeof data.title!=='string'||!Array.isArray(d
 async function loadJson(file){try{const loaded=validate(JSON.parse(await file.text()));objectUrls.forEach(url=>URL.revokeObjectURL(url));objectUrls.clear();project=loaded;editingId=currentId=project.scenes[0].id;renderProjects();renderEditor();notify('Tour configuration imported')}catch(e){notify('Import failed: '+e.message)}}
 async function loadImage(file){if(!file||!file.type.startsWith('image/'))return notify('Select a JPEG, PNG or WebP image');const img=new Image();const url=URL.createObjectURL(file);const dims=await new Promise(resolve=>{img.onload=()=>resolve([img.naturalWidth,img.naturalHeight]);img.onerror=()=>resolve(null);img.src=url});if(!dims){URL.revokeObjectURL(url);return notify('Cannot read image')}if(Math.abs(dims[0]/dims[1]-2)>.15){URL.revokeObjectURL(url);return notify('Use a mono 360° equirectangular image with an approximately 2:1 aspect ratio')}const id='scene-'+Date.now();project.scenes.push({id,name:file.name.replace(/\.[^.]+$/,'').replace(/[-_]/g,' '),image:url,x:45,y:45,hotspots:[]});objectUrls.set(id,url);editSelect(id);notify('Local preview loaded. Commit image file to GitHub for permanent hosting.')}
 function setExploreMode(mode,open=true){exploreMode=mode;sceneFilter='all';if(open)showPage('viewer');else renderScene();notify(mode==='guided'?'Guided walkthrough: use Next Stop':'Free exploration: choose any location')}function stepTour(delta){const idx=project.scenes.findIndex(s=>s.id===currentId);const next=Math.max(0,Math.min(project.scenes.length-1,idx+delta));selectScene(project.scenes[next].id)}function setSceneFilter(value){sceneFilter=value;$('.filter-chip').forEach(b=>b.classList.toggle('selected',b.id===(value==='all'?'allFilter':value==='street'?'streetFilter':value==='interior'?'interiorFilter':'facilitiesFilter')));renderScene()}function beginVR(){const sc=$('#vrScene');if(!sc?.enterVR)return notify('WebXR scene unavailable. Check your internet connection.');if(!navigator.xr)notify('Immersive VR requires a supported browser such as Meta Quest Browser with HTTPS.');sc.enterVR().catch(()=>notify('VR entry unavailable here; open the HTTPS site in Meta Quest Browser.'))}
-function init(){renderProjects();$('#startGuided').onclick=()=>{currentId=project.scenes[0].id;setExploreMode('guided')};$('#startFree').onclick=()=>setExploreMode('free');$('#toggleMode').onclick=()=>setExploreMode(exploreMode==='free'?'guided':'free',false);$('#prevStop').onclick=()=>stepTour(-1);$('#nextStop').onclick=()=>stepTour(1);[['allFilter','all'],['streetFilter','street'],['interiorFilter','interior'],['facilitiesFilter','facilities']].forEach(([id,val])=>$('#'+id).onclick=()=>setSceneFilter(val));$('[data-map-filter]').forEach(b=>b.onclick=()=>{mapFilter=b.dataset.mapFilter;$('[data-map-filter]').forEach(x=>x.classList.toggle('active',x===b));drawPlan()});$$('.nav').forEach(b=>b.onclick=()=>showPage(b.dataset.page));$('#createProject').onclick=()=>{if(!confirm('Replace the current in-browser tour with a blank project? Export any changes first.'))return;project={title:'New Architectural Tour',description:'',scenes:[{id:'scene1',name:'First viewpoint',image:'assets/atrium.jpg',x:45,y:45,hotspots:[]}]};editingId=currentId='scene1';renderProjects();showPage('editor')};$('#featuredOpen').onclick=()=>setExploreMode('guided');$('#backDashboard').onclick=()=>showPage('dashboard');$('#planBtn').onclick=openFloor;$('#closeFloor').onclick=closeFloor;$('.modal-backdrop').onclick=closeFloor;document.addEventListener('keydown',e=>{if(e.key==='Escape')closeFloor()});$('#saveScene').onclick=saveScene;$('#addHotspot').onclick=addHotspot;$('#previewTour').onclick=()=>{currentId=editingId;showPage('viewer')};$('#exportJson').onclick=exportData;$('#importJson').onclick=()=>$('#jsonFile').click();$('#jsonFile').onchange=e=>e.target.files[0]&&loadJson(e.target.files[0]);$('#imageFile').onchange=e=>e.target.files[0]&&loadImage(e.target.files[0]);$('#enterVR').addEventListener('click',e=>{e.preventDefault();beginVR()});const sc=$('#vrScene');sc.addEventListener('enter-vr',()=>{menuVisible=true;$('#cursor').setAttribute('visible','false');renderVRMenu();$('#vrMenu').setAttribute('visible','true')});sc.addEventListener('exit-vr',()=>toggleVRMenu(false));['abuttondown','xbuttondown','thumbstickdown'].forEach(evt=>{$('#leftHand').addEventListener(evt,()=>toggleVRMenu());$('#rightHand').addEventListener(evt,()=>toggleVRMenu())});renderEditor();renderScene()}
+function init(){renderProjects();$('#startGuided').onclick=()=>{currentId=project.scenes[0].id;setExploreMode('guided')};$('#startFree').onclick=()=>setExploreMode('free');$('#toggleMode').onclick=()=>setExploreMode(exploreMode==='free'?'guided':'free',false);$('#prevStop').onclick=()=>stepTour(-1);$('#nextStop').onclick=()=>stepTour(1);[['allFilter','all'],['streetFilter','street'],['interiorFilter','interior'],['facilitiesFilter','facilities']].forEach(([id,val])=>$('#'+id).onclick=()=>setSceneFilter(val));$('[data-map-filter]').forEach(b=>b.onclick=()=>{mapFilter=b.dataset.mapFilter;$('[data-map-filter]').forEach(x=>x.classList.toggle('active',x===b));drawPlan()});$$('.nav').forEach(b=>b.onclick=()=>showPage(b.dataset.page));$('#createProject').onclick=()=>{if(!confirm('Replace the current in-browser tour with a blank project? Export any changes first.'))return;project={title:'New Architectural Tour',description:'',scenes:[{id:'scene1',name:'First viewpoint',image:'assets/atrium.jpg',x:45,y:45,hotspots:[]}]};editingId=currentId='scene1';renderProjects();showPage('editor')};$('#featuredOpen').onclick=()=>setExploreMode('guided');$('#backDashboard').onclick=()=>showPage('dashboard');$('#planBtn').onclick=openFloor;$('#closeFloor').onclick=closeFloor;$('.modal-backdrop').onclick=closeFloor;document.addEventListener('keydown',e=>{if(e.key==='Escape')closeFloor()});$('#saveScene').onclick=saveScene;$('#addHotspot').onclick=addHotspot;$('#previewTour').onclick=()=>{currentId=editingId;showPage('viewer')};$('#exportJson').onclick=exportData;$('#importJson').onclick=()=>$('#jsonFile').click();$('#jsonFile').onchange=e=>e.target.files[0]&&loadJson(e.target.files[0]);$('#imageFile').onchange=e=>e.target.files[0]&&loadImage(e.target.files[0]);$('#enterVR').addEventListener('click',e=>{e.preventDefault();beginVR()});const sc=$('#vrScene');sc.addEventListener('enter-vr',()=>{$('#cursor').setAttribute('visible','false');menuVisible=false;toggleVRMenu(true)});sc.addEventListener('exit-vr',()=>toggleVRMenu(false));['abuttondown','xbuttondown','thumbstickdown'].forEach(evt=>{$('#leftHand').addEventListener(evt,()=>toggleVRMenu());$('#rightHand').addEventListener(evt,()=>toggleVRMenu())});renderEditor();renderScene()}
 async function bootstrap(){try{const response=await fetch('tour.json',{cache:'no-store'});if(response.ok){const data=validate(await response.json());project=data;editingId=currentId=data.scenes[0].id}}catch(e){console.warn('Using bundled demo tour:',e.message)}init()}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bootstrap);else bootstrap();

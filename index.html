@@ -62,13 +62,14 @@ for(let side of [-1,1])for(let i=0;i<10;i++){const x=-W/2+3+i*5.3;box(building,x
 for(let i=0;i<8;i++){const x=-7+i*2,z=(i%2?1:-1)*12;const trunk=new THREE.Mesh(new THREE.CylinderGeometry(.13,.22,3,9),wood);trunk.position.set(x,1.5,z);building.add(trunk);for(let j=0;j<7;j++)sphere(building,x+Math.sin(j*2)*.8,3+Math.cos(j*1.7)*.5,z+Math.cos(j*2)*.8,.75,leaf)}
 for(let side of [-1,1])for(let i=0;i<7;i++){const z=-27+i*8,x=side*31;const planter=box(site,x,.35,z,3,.7,3,stone);for(let k=0;k<5;k++)sphere(site,x+(Math.random()-.5)*2,1,z+(Math.random()-.5)*2,.3,leaf)}
 // miniature visitors distributed on each occupied level for scale and market life.
+const mat=(color,roughness=.85,metalness=0)=>new THREE.MeshStandardMaterial({color,roughness,metalness});const rubber=mat('#202323',.94);
 const people=[];function person(parent,x,y,z,color){const g=new THREE.Group();g.position.set(x,y,z);const skin=new THREE.MeshStandardMaterial({color:'#a96f50'}),shirt=new THREE.MeshStandardMaterial({color}),pants=new THREE.MeshStandardMaterial({color:'#3c403a'});const torso=new THREE.Mesh(new THREE.CapsuleGeometry(.2,.5,4,8),shirt);torso.position.y=1.05;g.add(torso);sphere(g,0,1.55,0,.15,skin);const legs=[];for(let s of [-1,1]){const leg=new THREE.Mesh(new THREE.CapsuleGeometry(.075,.4,3,6),pants);leg.position.set(s*.12,.4,0);g.add(leg);legs.push(leg)}parent.add(g);people.push({g,legs,phase:Math.random()*6})}
 for(let level=0;level<4;level++)for(let i=0;i<22;i++)person(floorGroups[level],-23+(i%11)*4.5,level*LEVEL,-26+Math.floor(i/11)*46,['#a9543e','#d0a25e','#567765','#73516e','#d7d0bd'][i%5]);
 // basement car/service/storage bays and ramp
 for(let i=0;i<8;i++){box(basement,-22+i*6.2,BASE+1.05,8,4.4,.22,9,wood);box(basement,-22+i*6.2,BASE+1.7,8,4.2,1.1,.12,wood2)}
 const ramp=box(site,35,-2.2,22,10,.18,24,groundMat);ramp.rotation.x=-.12;
 
-const mat=(color,roughness=.85,metalness=0)=>new THREE.MeshStandardMaterial({color,roughness,metalness});const rubber=mat('#202323',.94);
+
 // COURTYARD: open central landscaped court with seating, shade trees and flowering beds.
 const court=new THREE.Group();building.add(court);
 for(let x of [-7.2,7.2])for(let z of [-13,13]){box(court,x,.18,z,3.1,.35,3.1,stone);for(let k=0;k<7;k++)sphere(court,x+(Math.random()-.5)*2,.62,z+(Math.random()-.5)*2,.38,leaf)}

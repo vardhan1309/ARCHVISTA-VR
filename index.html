@@ -102,7 +102,7 @@ const roofGroup=new THREE.Group();building.add(roofGroup);
 const lanternStart=roofGroup.children.length;
 // Ventilated courtyard roof lantern inspired by the reference: a light-filtering jali canopy around a clear open-to-sky central slot.
 // Jali lantern is lowered onto the roof perimeter, aligned with the roof wings rather than floating above them; a 3.2 m slot remains open for stack ventilation.
-const lanternY=TOP+4.82,lanternFrame=mat('#8b573d',.8),lanternLattice=mat('#d7b58c',.78);
+const lanternY=TOP+4.5,lanternFrame=mat('#8b573d',.8),lanternLattice=mat('#d7b58c',.78);
 const panelDepth=(INNER_D-3.2)/2,panelWidth=INNER_W+1;
 for(let side of [-1,1]){
  const z=side*(3.2/2+panelDepth/2);
@@ -134,7 +134,7 @@ box(roofGroup,0,lanternY-.02,0,.12,.12,INNER_D,wood2);
 
 
 // roof pavilion: pitched terracotta roof over connected wings, steel/timber trusses and clerestory.
-const roofY=TOP+.35;box(roofGroup,0,roofY,D/2-1,W+3,.45,5,wood);box(roofGroup,0,roofY,-D/2+1,W+3,.45,5,wood);box(roofGroup,0,roofY,0,INNER_W+5,.4,D+3,wood);
+const roofY=TOP+.35;box(roofGroup,0,roofY,D/2-1,W+3,.45,5,wood);box(roofGroup,0,roofY,-D/2+1,W+3,.45,5,wood);
 for(let x=-W/2-1;x<=W/2+1;x+=6){const post=box(roofGroup,x,TOP+2.0,0,.22,3.5,.22,dark);const beam=box(roofGroup,x,TOP+3.7,0,.2,.2,D+3,wood2);beam.castShadow=true}
 for(let z=-D/2;z<=D/2;z+=8){for(let side of [-1,1]){const beam=box(roofGroup,side*(INNER_W/2+(W-INNER_W)/4),TOP+3.65,z,(W-INNER_W)/2+1,.22,.22,dark);beam.castShadow=true}}
  // Load-bearing posts align with the outer arcade grid and carry the roof edge beams down to the top-floor slab.

@@ -100,8 +100,8 @@ arch(floorGroups[0],0,0,D/2+.1,13,LEVEL*1.2,.75,plaster);box(floorGroups[0],0,LE
 // Roof is a separate scene group so floor-isolation mode can hide it cleanly.
 const roofGroup=new THREE.Group();building.add(roofGroup);
 // Ventilated courtyard roof lantern inspired by the reference: a light-filtering jali canopy around a clear open-to-sky central slot.
-// The four framed panels sit high above the atrium, leaving a continuous 3.2 m-wide opening for stack ventilation.
-const lanternY=TOP+7.15,lanternFrame=mat('#8b573d',.8),lanternLattice=mat('#d7b58c',.78);
+// Jali lantern is lowered onto the roof perimeter, aligned with the roof wings rather than floating above them; a 3.2 m slot remains open for stack ventilation.
+const lanternY=TOP+4.82,lanternFrame=mat('#8b573d',.8),lanternLattice=mat('#d7b58c',.78);
 const panelDepth=(INNER_D-3.2)/2,panelWidth=INNER_W+1;
 for(let side of [-1,1]){
  const z=side*(3.2/2+panelDepth/2);
@@ -256,8 +256,28 @@ for(let k=0;k<12;k++)box(basement,-20,BASE+.15+k*.28,-23+k*.62,3.2,.12,.72,stepM
 const jaliMat=new THREE.MeshStandardMaterial({color:'#a9563e',roughness:.86});
 for(let level=0;level<4;level++)for(let side of [-1,1])for(let bay=0;bay<3;bay++){const g=floorGroups[level],x=side*(W/2-.12),z=-18+bay*18,y=level*LEVEL+1.95;box(g,x,y,z,.18,2.35,2.1,jaliMat);for(let k=0;k<6;k++){const bar=box(g,x+side*.12,y-1.05+k*.42,z,.12,.055,2.05,wood2);bar.rotation.x=.0}for(let k=0;k<5;k++){const bar=box(g,x+side*.14,y,z-0.9+k*.45,.12,2.25,.055,wood2)}for(let k=0;k<4;k++){const a=box(g,x+side*.17,y-0.72+k*.48,z,.13,.045,2.0,stone);a.rotation.z=.55;const b=box(g,x+side*.17,y-0.72+k*.48,z,.13,.045,2.0,stone);b.rotation.z=-.55}}
 
-for(let i=0;i<10;i++){const p=new THREE.PointLight('#ffd69a',12,15,2);p.position.set(-22+i*4.8,TOP+1,-D/2+1);nightLights.add(p);const bulb=sphere(nightLights,-22+i*4.8,TOP+1,-D/2+1,.16,mat('#ffe4a8',.25));bulb.material.emissive=new THREE.Color('#ffc56d');bulb.material.emissiveIntensity=1.5}
-for(let level=0;level<4;level++)for(let x=-24;x<=24;x+=12){const l=new THREE.PointLight('#ffd29a',9,11,2);l.position.set(x,level*LEVEL+3.5,0);nightLights.add(l)}
+// NIGHT LIGHTING PACKAGE: layered architectural illumination, warm shop lighting and courtyard accents.
+const glow=(hex,intensity=2)=>{const m=new THREE.MeshStandardMaterial({color:hex,emissive:hex,emissiveIntensity:intensity,roughness:.35});return m};
+const warmGlow=glow('#ffbd75',2.8),amberGlow=glow('#ff8c43',2.2),coolGlow=glow('#b8e2df',1.5);
+function pointLight(x,y,z,color,intensity,range){const l=new THREE.PointLight(color,intensity,range,2);l.position.set(x,y,z);nightLights.add(l);return l}
+function glowBar(x,y,z,w,h,d,material,rot=0){const o=box(nightLights,x,y,z,w,h,d,material,false);o.rotation.y=rot;return o}
+// Continuous warm cove lines under each gallery edge and roof eaves.
+for(let level=0;level<4;level++){const y=level*LEVEL+.22;for(let z of [-INNER_D/2,INNER_D/2]){glowBar(0,y,z,INNER_W,.10,.12,warmGlow);for(let x=-W/2+3;x<=W/2-3;x+=9)pointLight(x,y+1.7,z*1.04,'#ffb86d',4.2,12)}for(let x of [-INNER_W/2,INNER_W/2]){glowBar(x,y,0,.12,.10,INNER_D,warmGlow);for(let z=-D/2+5;z<=D/2-5;z+=10)pointLight(x*1.08,y+1.8,z,'#ffc47e',3.8,11)}}
+// Each vendor bay gets a warm overhead pool of light and a softly glowing sign/display.
+for(let level=0;level<4;level++)for(let side of [-1,1])for(let i=0;i<10;i++){const x=side*(INNER_W/2+5.8),z=-D/2+5+i*6.1,y=level*LEVEL;pointLight(x,y+3.2,z,'#ffd18c',3.4,8);const strip=box(nightLights,x,y+2.48,z,2.65,.045,2.7,warmGlow,false);strip.position.y=y+2.49}
+// Facade arch grazers: alternating terracotta and warm-white light wash on all four elevations.
+for(let level=0;level<4;level++){const y=level*LEVEL+.35;for(let i=0;i<11;i++){const x=-W/2+2.5+i*5;pointLight(x,y+.45,D/2+1.1,i%2?'#ffb36d':'#ffe0b0',2.6,7);pointLight(x,y+.45,-D/2-1.1,'#ffb36d',2.3,7)}for(let side of [-1,1])for(let i=0;i<14;i++){const z=-D/2+2.6+i*4.8;pointLight(side*(W/2+1),y+.5,z,'#ffc17b',2.1,7)}}
+// Courtyard: tree uplights, bench-edge markers and a luminous perimeter rail.
+for(let i=0;i<8;i++){const x=-8+i*2.3,z=(i%2?1:-1)*16;pointLight(x,.65,z,'#f6c477',2.8,8)}
+for(let z=-INNER_D/2;z<=INNER_D/2;z+=6)for(let side of [-1,1]){pointLight(side*(INNER_W/2-.6),1.0,z,'#9ed7ce',1.25,5);sphere(nightLights,side*(INNER_W/2-.6),.42,z,.10,coolGlow)}
+for(let x=-INNER_W/2;x<=INNER_W/2;x+=5)for(let side of [-1,1])pointLight(x,.9,side*(INNER_D/2-.5),'#ffbd75',1.5,5);
+// Roof lantern glows from below, making the jali pattern legible at night.
+for(let x=-8;x<=8;x+=4){pointLight(x,TOP+5.2,0,'#ffe0ae',4.5,13);pointLight(x,TOP+4.0,0,'#8bd0c6',1.4,8)}
+// Exterior landscape bollards and entry portal lighting.
+for(let z=-30;z<=30;z+=10)for(let side of [-1,1]){const x=side*30;pointLight(x,1.8,z,'#ffc47d',2.4,9);const bollard=box(nightLights,x,.85,z,.22,1.5,.22,amberGlow,false);bollard.material=amberGlow}
+for(let x=-6;x<=6;x+=3){pointLight(x,2.2,D/2+3,'#ffe1b5',5,12);pointLight(x,3.8,D/2+3,'#ff9958',2.2,8)}
+// Roof edge marker lines add a restrained architectural outline.
+for(let side of [-1,1])glowBar(side*(W/2+1),TOP+4.42,0,.10,.08,D+2,amberGlow);
 nightLights.visible=false;
 
 

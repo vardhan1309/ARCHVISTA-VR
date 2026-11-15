@@ -45,11 +45,15 @@ for(let level=0;level<4;level++){const y=level*LEVEL,g=new THREE.Group();buildin
  // continuous outer walls and inner atrium gallery walls are cut into repeated arched bays.
  const frontZ=D/2,backZ=-D/2;
  // Thick masonry arcade walls with deep reveals: arches are openings cut into a continuous wall, not freestanding ribs.
- for(let i=0;i<11;i++){const x=-W/2+2.5+i*5;if(i!==5){arch(g,x,y,frontZ-.72,4.35,LEVEL-.12,.82,plaster);arch(g,x,y,backZ,4.35,LEVEL-.12,.82,plaster)}
-   if(i!==5){const glassPanel=box(g,x,y+1.42,frontZ-1.02,3.55,2.75,.10,glass);glassPanel.material=glass;for(let s of [-1,1])box(g,x+s*1.72,y+1.42,frontZ-.92,.10,2.85,.18,wood2);box(g,x,y+2.88,frontZ-.92,3.55,.12,.18,wood2);box(g,x,y+.12,frontZ-.92,3.55,.18,.2,stone);for(let s of [-1,1])box(g,x+s*.88,y+1.4,frontZ-.84,.055,2.65,.06,wood2)}
-   // recessed timber shop sign and warm display lighting within each arched bay
-   box(g,x,y+3.35,frontZ-.88,2.9,.42,.12,wood);const lamp=new THREE.PointLight('#ffd39b',1.2,5);lamp.position.set(x,y+2.8,frontZ-1.35);g.add(lamp);
- }
+  for(let i=0;i<11;i++){const x=-W/2+2.5+i*5;
+    // Only the ground-floor front centre bay is the monumental open market entrance.
+    // Rear centre and every upper-floor centre bay retain a complete arched wall.
+    const openEntry=(level===0&&i===5);
+    if(!openEntry)arch(g,x,y,frontZ-.72,4.35,LEVEL-.12,.82,plaster);
+    arch(g,x,y,backZ,4.35,LEVEL-.12,.82,plaster);
+    if(!openEntry&&i!==5){const glassPanel=box(g,x,y+1.42,frontZ-1.02,3.55,2.75,.10,glass);glassPanel.material=glass;for(let s of [-1,1])box(g,x+s*1.72,y+1.42,frontZ-.92,.10,2.85,.18,wood2);box(g,x,y+2.88,frontZ-.92,3.55,.12,.18,wood2);box(g,x,y+.12,frontZ-.92,3.55,.18,.2,stone);for(let s of [-1,1])box(g,x+s*.88,y+1.4,frontZ-.84,.055,2.65,.06,wood2)}
+    if(!openEntry){box(g,x,y+3.35,frontZ-.88,2.9,.42,.12,wood);const lamp=new THREE.PointLight('#ffd39b',1.2,5);lamp.position.set(x,y+2.8,frontZ-1.35);g.add(lamp)}
+  }
  for(let side of [-1,1])for(let i=0;i<14;i++){const z=-D/2+2.6+i*4.8;archSide(g,side*(W/2-.72),y,z,4.05,LEVEL-.12,.82,plaster);
    if(i%3!==1){const pane=box(g,side*(W/2-1.02),y+1.35,z, .1,2.65,3.2,glass);for(let s of [-1,1])box(g,side*(W/2-.91),y+1.35,z+s*1.58,.18,2.75,.1,wood2);box(g,side*(W/2-.91),y+2.72,z,.18,.12,3.2,wood2)}
  }
@@ -78,10 +82,14 @@ function addArchJali(parent,x,y,z,w,h,depth,rotY=0){
 }
 for(let level=0;level<4;level++){
  const g=floorGroups[level],y=level*LEVEL,h=LEVEL-.12;
- for(let i=0;i<11;i++){const x=-W/2+2.5+i*5;if(i!==5){addArchJali(g,x,y,D/2-.72,4.35,h,.82);addArchJali(g,x,y,-D/2,4.35,h,.82)}}
+  for(let i=0;i<11;i++){const x=-W/2+2.5+i*5;
+    // Keep only the ground-floor front entrance open; close every other front and rear arch with jali.
+    if(!(level===0&&i===5))addArchJali(g,x,y,D/2-.72,4.35,h,.82);
+    addArchJali(g,x,y,-D/2,4.35,h,.82);
+  }
  for(let side of [-1,1])for(let i=0;i<14;i++){const z=-D/2+2.6+i*4.8;addArchJali(g,side*(W/2-.72),y,z,4.05,h,.82,Math.PI/2)}
 }
-// The monumental ground-floor entrance arch is deliberately left completely open: no jali, infill, or rear-facing arch blocks the sightline.
+// The ground-floor front entrance is the only un-infilled arch; rear and upper-floor walls remain continuous.
 // Roof-bearing columns: continuous masonry piers at the outer arcade line and courtyard edge.
 // prominent continuous corner piers and horizontal floor bands bind the floors into one building.
 // Structural piers and cornices are grouped by storey to guarantee isolated floor views.

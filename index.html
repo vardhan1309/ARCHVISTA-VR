@@ -45,7 +45,7 @@ for(let level=0;level<4;level++){const y=level*LEVEL,g=new THREE.Group();buildin
  // continuous outer walls and inner atrium gallery walls are cut into repeated arched bays.
  const frontZ=D/2,backZ=-D/2;
  // Thick masonry arcade walls with deep reveals: arches are openings cut into a continuous wall, not freestanding ribs.
- for(let i=0;i<11;i++){const x=-W/2+2.5+i*5;arch(g,x,y,frontZ-.72,4.35,LEVEL-.12,.82,plaster);arch(g,x,y,backZ,4.35,LEVEL-.12,.82,plaster);
+ for(let i=0;i<11;i++){const x=-W/2+2.5+i*5;if(i!==5){arch(g,x,y,frontZ-.72,4.35,LEVEL-.12,.82,plaster);arch(g,x,y,backZ,4.35,LEVEL-.12,.82,plaster)}
    if(i!==5){const glassPanel=box(g,x,y+1.42,frontZ-1.02,3.55,2.75,.10,glass);glassPanel.material=glass;for(let s of [-1,1])box(g,x+s*1.72,y+1.42,frontZ-.92,.10,2.85,.18,wood2);box(g,x,y+2.88,frontZ-.92,3.55,.12,.18,wood2);box(g,x,y+.12,frontZ-.92,3.55,.18,.2,stone);for(let s of [-1,1])box(g,x+s*.88,y+1.4,frontZ-.84,.055,2.65,.06,wood2)}
    // recessed timber shop sign and warm display lighting within each arched bay
    box(g,x,y+3.35,frontZ-.88,2.9,.42,.12,wood);const lamp=new THREE.PointLight('#ffd39b',1.2,5);lamp.position.set(x,y+2.8,frontZ-1.35);g.add(lamp);
@@ -78,23 +78,52 @@ function addArchJali(parent,x,y,z,w,h,depth,rotY=0){
 }
 for(let level=0;level<4;level++){
  const g=floorGroups[level],y=level*LEVEL,h=LEVEL-.12;
- for(let i=0;i<11;i++){const x=-W/2+2.5+i*5;addArchJali(g,x,y,D/2-.72,4.35,h,.82);addArchJali(g,x,y,-D/2,4.35,h,.82)}
+ for(let i=0;i<11;i++){const x=-W/2+2.5+i*5;if(i!==5){addArchJali(g,x,y,D/2-.72,4.35,h,.82);addArchJali(g,x,y,-D/2,4.35,h,.82)}}
  for(let side of [-1,1])for(let i=0;i<14;i++){const z=-D/2+2.6+i*4.8;addArchJali(g,side*(W/2-.72),y,z,4.05,h,.82,Math.PI/2)}
 }
-// Jali closure for the monumental ground-floor entrance arch as well.
-addArchJali(floorGroups[0],0,0,D/2+.1,13,LEVEL*1.2,.75);
+// The monumental ground-floor entrance arch is deliberately left completely open: no jali, infill, or rear-facing arch blocks the sightline.
 // Roof-bearing columns: continuous masonry piers at the outer arcade line and courtyard edge.
 // prominent continuous corner piers and horizontal floor bands bind the floors into one building.
 // Structural piers and cornices are grouped by storey to guarantee isolated floor views.
 for(let level=0;level<4;level++){const y=level*LEVEL,g=floorGroups[level];for(let x of [-W/2,W/2])for(let z of [-D/2,D/2])box(g,x,y+LEVEL/2,z,1.15,LEVEL,1.15,brick);box(g,0,y+LEVEL-.12,D/2+.08,W+1,.34,.8,roofMat)}
 // Monumental entrance portal belongs only to the ground-floor model.
 arch(floorGroups[0],0,0,D/2+.1,13,LEVEL*1.2,.75,plaster);box(floorGroups[0],0,LEVEL*1.28,D/2+.88,17,.75,.32,plaster);box(floorGroups[0],0,LEVEL*1.28,D/2+1.08,14,.38,.08,wood); 
+
+// Ventilated courtyard roof lantern inspired by the reference: a light-filtering jali canopy around a clear open-to-sky central slot.
+// The four framed panels sit high above the atrium, leaving a continuous 3.2 m-wide opening for stack ventilation.
+const lanternY=TOP+7.15,lanternFrame=mat('#8b573d',.8),lanternLattice=mat('#d7b58c',.78);
+const panelDepth=(INNER_D-3.2)/2,panelWidth=INNER_W+1;
+for(let side of [-1,1]){
+ const z=side*(3.2/2+panelDepth/2);
+ box(roofGroup,0,lanternY,z,panelWidth,.22,panelDepth,lanternFrame);
+ // open geometric lattice: repeated square modules with diagonal cross-bracing and generous clear apertures
+ for(let x=-INNER_W/2+.7;x<=INNER_W/2-.3;x+=1.45){
+  for(let zz=z-panelDepth/2+.65;zz<=z+panelDepth/2-.35;zz+=1.45){
+   box(roofGroup,x,lanternY+.18,zz,.075,.075,1.22,lanternLattice);
+   box(roofGroup,x,lanternY+.18,zz,1.22,.075,.075,lanternLattice);
+   const d1=box(roofGroup,x,lanternY+.2,zz,1.52,.055,.055,lanternLattice);d1.rotation.y=Math.PI/4;
+   const d2=box(roofGroup,x,lanternY+.2,zz,1.52,.055,.055,lanternLattice);d2.rotation.y=-Math.PI/4;
+  }
+ }
+ box(roofGroup,0,lanternY+.32,z,panelWidth,.16,.16,wood2);
+}
+for(let side of [-1,1]){
+ const x=side*(INNER_W/2+.42);
+ box(roofGroup,x,lanternY,0,.2,.22,INNER_D,lanternFrame);
+ for(let z=-INNER_D/2+.7;z<=INNER_D/2-.3;z+=1.45){
+  box(roofGroup,x+side*.12,lanternY+.18,z,.075,.075,1.22,lanternLattice);
+  box(roofGroup,x+side*.12,lanternY+.18,z,1.22,.075,.075,lanternLattice).rotation.y=Math.PI/2;
+ }
+}
+// Keep a genuinely open longitudinal slot through the middle of the skylight for free air movement.
+box(roofGroup,0,lanternY-.02,0,.12,.12,INNER_D,wood2);
+
 // Roof is a separate scene group so floor-isolation mode can hide it cleanly.
 const roofGroup=new THREE.Group();building.add(roofGroup);
 // roof pavilion: pitched terracotta roof over connected wings, steel/timber trusses and clerestory.
 const roofY=TOP+.35;box(roofGroup,0,roofY,D/2-1,W+3,.45,5,wood);box(roofGroup,0,roofY,-D/2+1,W+3,.45,5,wood);box(roofGroup,0,roofY,0,INNER_W+5,.4,D+3,wood);
 for(let x=-W/2-1;x<=W/2+1;x+=6){const post=box(roofGroup,x,TOP+2.0,0,.22,3.5,.22,dark);const beam=box(roofGroup,x,TOP+3.7,0,.2,.2,D+3,wood2);beam.castShadow=true}
-for(let z=-D/2;z<=D/2;z+=8){const beam=box(roofGroup,0,TOP+3.65,z,W+3,.22,.22,dark);beam.castShadow=true}
+for(let z=-D/2;z<=D/2;z+=8){for(let side of [-1,1]){const beam=box(roofGroup,side*(INNER_W/2+(W-INNER_W)/4),TOP+3.65,z,(W-INNER_W)/2+1,.22,.22,dark);beam.castShadow=true}}
  // Load-bearing posts align with the outer arcade grid and carry the roof edge beams down to the top-floor slab.
  for(let x=-W/2;x<=W/2;x+=9){
   for(let z of [-D/2-1,D/2+1]){

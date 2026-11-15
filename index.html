@@ -51,11 +51,11 @@ for(let level=0;level<4;level++){const y=level*LEVEL,g=new THREE.Group();buildin
     const openEntry=(level===0&&i===5);
     if(!openEntry)arch(g,x,y,frontZ-.72,4.35,LEVEL-.12,.82,plaster);
     arch(g,x,y,backZ,4.35,LEVEL-.12,.82,plaster);
-    if(!openEntry&&i!==5){for(let s of [-1,1])box(g,x+s*1.72,y+1.42,frontZ-.92,.10,2.85,.18,wood2);box(g,x,y+2.88,frontZ-.92,3.55,.12,.18,wood2);box(g,x,y+.12,frontZ-.92,3.55,.18,.2,stone);for(let s of [-1,1])box(g,x+s*.88,y+1.4,frontZ-.84,.055,2.65,.06,wood2)}
+    if(!openEntry&&i!==5){const glassPanel=box(g,x,y+1.42,frontZ-1.02,3.55,2.75,.10,glass);glassPanel.material=glass;for(let s of [-1,1])box(g,x+s*1.72,y+1.42,frontZ-.92,.10,2.85,.18,wood2);box(g,x,y+2.88,frontZ-.92,3.55,.12,.18,wood2);box(g,x,y+.12,frontZ-.92,3.55,.18,.2,stone);for(let s of [-1,1])box(g,x+s*.88,y+1.4,frontZ-.84,.055,2.65,.06,wood2)}
     if(!openEntry){box(g,x,y+3.35,frontZ-.88,2.9,.42,.12,wood);const lamp=new THREE.PointLight('#ffd39b',1.2,5);lamp.position.set(x,y+2.8,frontZ-1.35);g.add(lamp)}
   }
  for(let side of [-1,1])for(let i=0;i<14;i++){const z=-D/2+2.6+i*4.8;archSide(g,side*(W/2-.72),y,z,4.05,LEVEL-.12,.82,plaster);
-   if(i%3!==1){for(let s of [-1,1])box(g,side*(W/2-.91),y+1.35,z+s*1.58,.18,2.75,.1,wood2);box(g,side*(W/2-.91),y+2.72,z,.18,.12,3.2,wood2)}
+   if(i%3!==1){const pane=box(g,side*(W/2-1.02),y+1.35,z, .1,2.65,3.2,glass);for(let s of [-1,1])box(g,side*(W/2-.91),y+1.35,z+s*1.58,.18,2.75,.1,wood2);box(g,side*(W/2-.91),y+2.72,z,.18,.12,3.2,wood2)}
  }
  // gallery railings facing the central atrium.
  // Simple open metal railing around the courtyard void; no solid parapet walls.

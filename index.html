@@ -340,6 +340,9 @@ function produceCart(parent,x,y,z,type){
  box(g,0,2.2,-.78,.95,.09,.72,steel);box(g,0,2.68,-.82,.09,.92,.09,steel);box(g,0,3.13,-.82,.72,.72,.16,screen);box(g,0,3.13,-.725,.57,.5,.035,mat('#7db9a0',.24));
  for(let k=0;k<4;k++)box(g,-.18+(k%2)*.16,3.2-Math.floor(k/2)*.13,-.7,.1,.035,.015,mat('#b9e2c6',.25));
  // Branded sign panel remains a separate stall sign above the furniture.
+ // Scale the stall vertically so the working counter is ~1.05 m and the scale display
+ // remains below eye level; keep the stall footprint unchanged.
+ g.scale.y=.58;
  return g
 }
 for(let level=0;level<4;level++){const group=floorGroups[level];let idx=0;for(let side of [-1,1])for(let i=0;i<10;i++){const x=side*(INNER_W/2+5.8),z=-D/2+5+i*6.1;const n=stallNames[(i+(side===1?4:0)+level*2)%stallNames.length];produceCart(group,x,level*LEVEL,z,n);
@@ -370,11 +373,13 @@ for(let level=0;level<4;level++)for(let side of [-1,1])for(let bay=0;bay<3;bay++
 const vendorShirt=['#b85f43','#597e70','#c29a57','#765b78','#d7d0bd','#a65b36'];
 for(let level=0;level<4;level++)for(let side of [-1,1])for(let i=0;i<10;i++){
  const sx=side*(INNER_W/2+5.8),sz=-D/2+5+i*6.1,baseY=level*LEVEL;
- const owner=person(floorGroups[level],sx-side*2.05,baseY,sz+.15,vendorShirt[(i+level*2+(side===1?2:0))%vendorShirt.length],(i+1)%3,false);
- owner.g.rotation.y=side===1?Math.PI/2:-Math.PI/2;
+ // Vendor stands directly behind the lowered counter, facing the customer approach.
+ const owner=person(floorGroups[level],sx,baseY,sz-1.55,vendorShirt[(i+level*2+(side===1?2:0))%vendorShirt.length],(i+1)%3,false);
+ owner.g.rotation.y=0;
+ // Customers stand in front of selected counters; their heads and upper bodies remain visible.
  if((i+level+(side===1?1:0))%3===0){
-  const customer=person(floorGroups[level],sx-side*4.15,baseY,sz+1.55,['#d5a16a','#6f8990','#b85f43','#c7b7a0'][(i+level)%4],(i+2)%3,true);
-  customer.g.rotation.y=side===1?Math.PI/2:-Math.PI/2;
+  const customer=person(floorGroups[level],sx+side*.9,baseY,sz+2.15,['#d5a16a','#6f8990','#b85f43','#c7b7a0'][(i+level)%4],(i+2)%3,true);
+  customer.g.rotation.y=Math.PI;
  }
 }
 // NIGHT LIGHTING PACKAGE: layered architectural illumination, warm shop lighting and courtyard accents.

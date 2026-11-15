@@ -7,10 +7,10 @@
 <footer class="bottom"><span>DRAG TO ORBIT · SCROLL TO ZOOM · SELECT A FLOOR · WASD TO WALK</span><div><button class="ui" id="walk">WALK MODE</button><button class="ui active" id="orbit">ORBIT MODE</button><button class="ui" id="vr">ENTER VR</button></div></footer>
 <script>
 document.getElementById('enter').addEventListener('click',function(){document.getElementById('intro').classList.add('hide')});
-window.addEventListener('error',function(){const el=document.getElementById('description');if(el)el.textContent='The 3D engine did not finish loading. Refresh the page; if it persists, open the site in Chrome and check that external CDN scripts are allowed.'});
-window.addEventListener('unhandledrejection',function(){const el=document.getElementById('description');if(el)el.textContent='A 3D resource failed to load. Check your internet connection and reload the page.'});
+window.addEventListener('error',function(e){const el=document.getElementById('description');if(el)el.textContent='3D loading error: '+(e.message||e.target?.src||'unknown resource')+'. Check the browser console for details.'});
+window.addEventListener('unhandledrejection',function(e){const el=document.getElementById('description');if(el)el.textContent='3D module error: '+String(e.reason?.message||e.reason||'unknown import failure')+'.'});
 </script>
-<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
+<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.170.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.170.0/examples/jsm/"}}</script>
 <script type="module">
 import * as THREE from 'three';import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 const $=s=>document.querySelector(s),canvas=$('#view'),scene=new THREE.Scene();scene.background=new THREE.Color('#b8c0bd');scene.fog=new THREE.Fog('#b8c0bd',90,230);

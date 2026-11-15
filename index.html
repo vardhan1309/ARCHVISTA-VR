@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#101923"><meta name="archvista-build" content="2026-11-15-market-v3"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><title>ARCHVISTA VR | Poorna Market</title>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#101923"><meta name="archvista-build" content="2026-11-15-market-realism-v4"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><title>ARCHVISTA VR | Poorna Market</title>
 <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
 <style>
 :root{--bg:#101923;--panel:#172632eF;--teal:#78d7c4;--muted:#b8c8cc}*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Inter,Arial,sans-serif;color:#f2f6f5;overflow:hidden}a-scene{position:fixed!important;inset:0;width:100vw;height:100vh;height:100dvh;z-index:0}a-scene canvas{width:100%!important;height:100%!important}.intro{position:fixed;inset:0;z-index:8;display:grid;place-items:center;text-align:center;padding:24px;background:radial-gradient(ellipse at 50% 65%,#315a58 0,#172b36 42%,#101923 78%)}.intro.hide{display:none}.intro-card{max-width:720px}.eyebrow{color:var(--teal);letter-spacing:.24em;font-size:11px;font-weight:800}.intro h1{font:clamp(42px,8vw,88px)/.98 Georgia,serif;margin:18px 0}.intro p{max-width:540px;color:#c6d3d5;line-height:1.7;margin:18px auto 26px}.btn{border:1px solid #78d7c4;color:#0e2028;background:var(--teal);padding:14px 22px;border-radius:8px;font-weight:800;cursor:pointer;margin:5px}.btn.alt{background:#172632;color:#f2f6f5;border-color:#49636b}.hud{display:none;position:fixed;inset:0;z-index:5;pointer-events:none}.hud.on{display:block}.hud>*{pointer-events:auto}.brand{position:absolute;top:18px;left:18px;background:var(--panel);border:1px solid #78d7c455;padding:12px 16px;border-radius:10px;font-family:Georgia,serif}.tools{position:absolute;right:18px;top:18px;display:flex;gap:8px}.tools button,.dock button{background:var(--panel);border:1px solid #78d7c455;color:#fff;border-radius:9px;padding:11px;cursor:pointer}.dock{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);display:flex;gap:8px;background:var(--panel);padding:8px;border:1px solid #78d7c455;border-radius:13px;white-space:nowrap}.dock button.active{background:var(--teal);color:#10232b}.info{position:absolute;right:18px;bottom:86px;width:min(300px,calc(100vw - 36px));background:var(--panel);border:1px solid #78d7c455;border-radius:12px;padding:16px}.info h3{color:var(--teal);margin:0 0 7px;font:22px Georgia,serif}.info p{font-size:13px;line-height:1.5;color:#d1dcdd;margin:0}.hint{position:absolute;left:18px;bottom:22px;color:#e4eded;background:#101923aa;padding:10px 13px;border-radius:8px;font-size:12px}@media(max-width:600px){.info{bottom:82px;right:10px}.hint{display:none}.brand{top:10px;left:10px}.tools{top:10px;right:10px}.dock{bottom:10px;max-width:96vw;overflow-x:auto}.tools button{padding:9px;font-size:12px}}
 </style></head><body>
-<div class="intro" id="intro"><div class="intro-card"><div class="eyebrow">ARCHVISTA VR · VISAKHAPATNAM</div><h1>Poorna<br>Market</h1><p>A new spatial interpretation of the market — a walkable architectural concept shaped around shaded trading streets, courtyards, verandahs and a central public spine.</p><button class="btn" id="enter">ENTER THE MARKET</button><button class="btn alt" id="guided">START A GUIDED WALK</button><div style="margin-top:22px;color:#aabdc1;font-size:12px">Conceptual 3D environment · WASD to walk · drag to look · Quest supported</div></div></div>
+<div class="intro" id="intro"><div class="intro-card"><div class="eyebrow">ARCHVISTA VR · VISAKHAPATNAM</div><h1>Poorna<br>Market</h1><p>Explore a lively conceptual Poorna Market with detailed vendor stalls, fresh produce, shoppers, tropical planting, birds and shaded pedestrian streets.</p><button class="btn" id="enter">ENTER THE MARKET</button><button class="btn alt" id="guided">START A GUIDED WALK</button><div style="margin-top:22px;color:#aabdc1;font-size:12px">Detailed conceptual 3D market · WASD to walk · drag to look · Quest supported</div></div></div>
 <div class="hud" id="hud"><div class="brand">ARCHVISTA <span style="color:var(--teal)">/</span> POORNA MARKET</div><div class="tools"><button id="day">☼ Day / Dusk</button><button id="music">♫ Sound off</button><button id="home">⌂ Intro</button></div><div class="info"><h3 id="infoTitle">Market Spine</h3><p id="infoText">Move through the shaded pedestrian spine and discover the market's public spaces.</p></div><div class="hint">WASD / arrows · drag to look · click a teal marker to inspect</div><div class="dock"><button id="prev">←</button><button id="free" class="active">Free walk</button><button id="next">Guided →</button><button id="vr">Enter VR</button></div></div>
 <a-scene id="scene" embedded vr-mode-ui="enabled:false" renderer="antialias:true;colorManagement:true" shadow="type:pcfsoft" background="color:#9eb7b5" fog="type:linear;color:#9eb7b5;near:45;far:125">
 <a-assets><a-mixin id="wall" material="color:#c9bda6;roughness:.95"></a-mixin><a-mixin id="teal" material="color:#245d5b;roughness:.8"></a-mixin><a-mixin id="wood" material="color:#77583d;roughness:.9"></a-mixin></a-assets>
@@ -21,7 +21,10 @@ const spaces=[
 ['Community Chowk','An open civic court for seasonal markets, neighbourhood gatherings and cultural events.'],
 ['Food Street','A compact cluster of food counters with shared seating beneath a tensile shade canopy.'],
 ['Upper Gallery','A first-floor pedestrian balcony overlooking the public market street.']];
-const mat=(color,roughness=.9)=>new THREE.MeshStandardMaterial({color,roughness});
+const mat=(color,roughness=.9,metalness=0)=>new THREE.MeshStandardMaterial({color,roughness,metalness});
+const sphere=(parent,x,y,z,r,color,sx=1,sy=1,sz=1)=>{const m=new THREE.Mesh(new THREE.SphereGeometry(r,16,12),mat(color));m.position.set(x,y,z);m.scale.set(sx,sy,sz);m.castShadow=true;m.receiveShadow=true;parent.object3D.add(m);return m};
+const cylinder=(parent,x,y,z,r1,r2,h,color,segments=12)=>{const m=new THREE.Mesh(new THREE.CylinderGeometry(r1,r2,h,segments),mat(color));m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;parent.object3D.add(m);return m};
+const group=(parent,x=0,y=0,z=0)=>{const g=new THREE.Group();g.position.set(x,y,z);parent.object3D.add(g);return g};
 const box=(x,y,z,w,h,d,color,parent=world)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat(color));m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;parent.object3D.add(m);return m};
 function building(side,z,idx){const x=side*10;const g=document.createElement('a-entity');g.setAttribute('position',x+' 0 '+z);world.appendChild(g);const facade=idx%2?'#d5c6a9':'#c4b79d';box(0,2.1,0,8.2,4.2,7,facade,g);box(0,5.9,0,8.2,3.2,7,idx%2?'#b9a88b':'#d8cbb3',g);box(0,7.65,0,8.7,.22,7.5,'#76583f',g);box(0,4.3,3.56,8.5,.22,.3,'#76583f',g);box(0,1.45,3.54,3.2,2.7,.18,'#245d5b',g);box(0,1.45,3.65,2.8,2.3,.1,'#9bb4ae',g);for(let k=-1;k<=1;k++){box(k*2.6,5.65,3.58,1.45,1.45,.12,'#416b69',g);box(k*2.6,4.75,3.8,1.8,.12,.65,'#76583f',g)}box(0,3.15,3.9,3.5,.55,.5,'#245d5b',g);box(0,3.15,4.17,3.1,.35,.08,'#78d7c4',g);for(let k=-1;k<=1;k++){box(k*2.1,8.1,3.5,1.3,.12,.2,'#76583f',g)}}
 for(let i=0;i<10;i++){const z=8-i*10;building(-1,z,i);building(1,z,i)}
@@ -30,11 +33,60 @@ box(0,.12,-30,7,.25,92,'#897d68');for(let z=-70;z<12;z+=9){for(let x of [-3.1,3.
 box(0,6.7,-30,7.8,.28,92,'#315c58');
 // courtyard paving, raised planters, trees, seating and bollard lights
 for(let z=-65;z<10;z+=11){for(let x of [-6,6]){box(x,.22,z,2,.4,2,'#496b5b');const trunk=document.createElement('a-cylinder');trunk.setAttribute('position',x+' 1.7 '+z);trunk.setAttribute('height','3');trunk.setAttribute('radius','.16');trunk.setAttribute('color','#715239');world.appendChild(trunk);const crown=document.createElement('a-sphere');crown.setAttribute('position',x+' 3.7 '+z);crown.setAttribute('radius','1.35');crown.setAttribute('color','#52745b');world.appendChild(crown);box(x*.55,.35,z+2,2.3,.35,.55,'#76583f')}}
+
+// Rich market layer: shopfronts, working stalls, produce, shoppers and landscape
+function stall(side,z,index){
+ const x=side*5.35, g=document.createElement('a-entity');g.setAttribute('position',x+' 0 '+z);world.appendChild(g);
+ box(0,.92,0,3.55,1.05,2.15,'#79543a',g);box(0,1.48,-.12,3.7,.12,2.3,'#d7c39d',g);
+ // striped cloth awning and timber supports
+ for(let j=-3;j<=3;j++){box(j*.48,2.25,.35,.47,.08,2.45,(j+index)%2?'#d8e0d2':'#a84f37',g)}
+ for(let xx of [-1.72,1.72])for(let zz of [-.75,.75])cylinder(g,xx,1.95,zz,.055,.055,2.05,'#60452f',8);
+ // crates and colourful market goods
+ for(let j=0;j<5;j++){box(-1.35+j*.67,1.62,.1,.55,.28,.62,'#986b43',g);for(let k=0;k<7;k++){const col=['#d94e32','#e5a52f','#6d9b45','#c64d50','#e2c04e'][((j*7+k+index)%5)];sphere(g,-1.55+j*.67+(k%3)*.13,1.88+Math.floor(k/3)*.09,.02+(k%2)*.13,.105,col,.95,.8,.95)}}
+ // hanging bulbs and signboard
+ box(0,2.72,-.82,2.6,.48,.1,'#214c49',g);box(0,2.72,-.75,2.42,.34,.06,'#e5d5b5',g);
+ for(let xx of [-1.15,1.15]){cylinder(g,xx,2.48,-.4,.035,.035,.45,'#59452f',8);sphere(g,xx,2.24,-.4,.12,'#ffe3a1')}
+}
+for(let i=0;i<18;i++){const z=4-i*5.0;stall(i%2===0?-1:1,z,i)}
+// Pavement joints, textured-looking stone insets and seating
+for(let z=-78;z<18;z+=2.4){for(let x=-4.3;x<=4.3;x+=2.15){const tile=box(x,.015,z,2.08,.025,2.32,(Math.round(x+z)%2?'#a89e89':'#b9ad94'));tile.receiveShadow=true}}
+for(let z=-70;z<10;z+=15){for(let side of [-1,1]){box(side*5.2,.55,z,2.4,.5,.65,'#76583f');box(side*5.2,.83,z,2.5,.09,.72,'#b68b5d')}}
+function person(x,z,shirt,pants,scale=1,walk=true){
+ const root=new THREE.Group();root.position.set(x,0,z);root.scale.setScalar(scale);world.object3D.add(root);
+ const torso=new THREE.Mesh(new THREE.CapsuleGeometry(.23,.58,4,8),mat(shirt));torso.position.y=1.16;torso.castShadow=true;root.add(torso);
+ const head=new THREE.Mesh(new THREE.SphereGeometry(.17,16,12),mat('#a96f4c'));head.position.set(0,1.68,0);head.castShadow=true;root.add(head);
+ const hair=new THREE.Mesh(new THREE.SphereGeometry(.175,12,8,0,Math.PI*2,0,Math.PI*.55),mat('#25201d'));hair.position.set(0,1.73,0);root.add(hair);
+ for(let s of [-1,1]){const arm=new THREE.Mesh(new THREE.CapsuleGeometry(.075,.42,3,6),mat('#a96f4c'));arm.position.set(s*.3,1.18,.02);arm.rotation.z=s*.16;root.add(arm);
+ const leg=new THREE.Mesh(new THREE.CapsuleGeometry(.09,.48,3,6),mat(pants));leg.position.set(s*.12,.47,0);root.add(leg);
+ const shoe=new THREE.Mesh(new THREE.BoxGeometry(.16,.09,.3),mat('#342b27'));shoe.position.set(s*.12,.13,.06);root.add(shoe)}
+ if(walk){root.userData.phase=Math.random()*6.28;root.userData.legs=root.children.filter((o,i)=>i===4||i===6)}
+ return root;
+}
+const crowd=[];
+for(let i=0;i<34;i++){const z=2-(i%17)*4.7,side=i%2?1:-1,x=side*(2.2+Math.random()*1.5);const p=person(x,z,['#b84f38','#315d75','#d2a13e','#47714d','#7c536e','#e0d5bd'][i%6],['#373d42','#5d5143','#333b34'][i%3],.82+Math.random()*.22,i%3!==0);crowd.push(p)}
+// Vendors behind counters
+for(let i=0;i<12;i++){const z=3-i*7.2,side=i%2?1:-1;person(side*5.25,z,['#f0e1c8','#d5b56c','#56766a'][i%3],'#51483e',.9,false)}
+// Tropical trees with branching trunks and layered foliage
+function tree(x,z,seed){const g=new THREE.Group();g.position.set(x,0,z);world.object3D.add(g);
+ const trunk=new THREE.Mesh(new THREE.CylinderGeometry(.12,.25,3.6,9),mat('#65472f'));trunk.position.y=1.8;trunk.castShadow=true;g.add(trunk);
+ for(let b=0;b<5;b++){const branch=new THREE.Mesh(new THREE.CylinderGeometry(.045,.09,1.6,7),mat('#765338'));branch.position.set(Math.sin(b*1.25)*.48,2.8,Math.cos(b*1.25)*.48);branch.rotation.z=(b%2?-.45:.45);g.add(branch)}
+ for(let j=0;j<16;j++){const leaf=new THREE.Mesh(new THREE.IcosahedronGeometry(.72+Math.random()*.35,1),mat(['#315f43','#426f49','#527b4c','#63864e'][j%4]));leaf.position.set((Math.random()-.5)*2.5,3.4+Math.random()*1.5,(Math.random()-.5)*2.5);leaf.scale.y=.8;leaf.castShadow=true;g.add(leaf)}
+ cylinder(world,x,.25,z,1.05,1.05,.42,'#82755f',20);
+}
+for(let i=0;i<13;i++){tree(i%2?7.5:-7.5,-4-i*6.2,i)}
+// Flower beds with individual petals and low shrubs
+for(let i=0;i<22;i++){const x=(i%2?1:-1)*(7.2+(i%3)*.35),z=5-Math.floor(i/2)*7.1;for(let k=0;k<5;k++){const px=x+(Math.random()-.5)*1.1,pz=z+(Math.random()-.5)*1.1;sphere(world,px,.45,pz,.19,['#d94f70','#f0c34e','#f3e6d1','#b75b9a'][k%4],.65,1,.65);for(let a=0;a<5;a++){const pet=sphere(world,px+Math.cos(a*1.256)*.16,.52,pz+Math.sin(a*1.256)*.16,.085,['#f4b5c5','#f7d66d','#fff0d8','#e8a6d2'][k%4],.8,1,.8)}}}
+// Birds crossing above the market roofline
+const birds=[];
+for(let i=0;i<7;i++){const b=new THREE.Group();world.object3D.add(b);b.position.set(-8+i*2.5,10+Math.sin(i)*1.5,-12-i*7);const body=new THREE.Mesh(new THREE.SphereGeometry(.16,10,8),mat('#343c3b'));b.add(body);for(let s of [-1,1]){const wing=new THREE.Mesh(new THREE.BoxGeometry(.48,.035,.16),mat('#343c3b'));wing.position.x=s*.25;wing.rotation.z=s*.25;b.add(wing)}birds.push(b)}
+// Warm shop pendants and street lights
+for(let z=-68;z<8;z+=10){for(let side of [-1,1]){cylinder(world,side*4.6,2.25,z,.045,.06,4.5,'#4b5148',8);const lamp=sphere(world,side*4.6,4.45,z,.18,'#ffe2a2');lamp.material.emissive=new THREE.Color('#d9a65c');lamp.material.emissiveIntensity=.65}}
 for(let i=0;i<spaces.length;i++){const z=9-i*13;const marker=document.createElement('a-cylinder');marker.className='pick';marker.setAttribute('position','0 1.1 '+z);marker.setAttribute('radius','.38');marker.setAttribute('height','.12');marker.setAttribute('color','#78d7c4');marker.setAttribute('rotation','90 0 0');marker.setAttribute('data-space',i);marker.setAttribute('animation','property:scale;to:1.2 1.2 1.2;dir:alternate;dur:1300;loop:true');marker.addEventListener('click',()=>select(i));world.appendChild(marker)}
 function select(i){selected=(i+spaces.length)%spaces.length;$('#infoTitle').textContent=spaces[selected][0];$('#infoText').textContent=spaces[selected][1];const z=9-selected*13;$('#rig').setAttribute('animation__walk',{property:'position',to:{x:0,y:0,z:z+5},dur:1300,easing:'easeInOutQuad'});$('#prev').classList.toggle('active',selected===0)}
 $('#prev').onclick=()=>select(selected-1);$('#next').onclick=()=>select(selected+1);$('#free').onclick=()=>{$('#rig').removeAttribute('animation__walk');$('#infoTitle').textContent='Free Exploration';$('#infoText').textContent='Move at your own pace through the market spine and shaded courtyards.'};$('#guided').onclick=()=>{enter();select(0)};function enter(){$('#intro').classList.add('hide');$('#hud').classList.add('on')}$('#enter').onclick=enter;$('#home').onclick=()=>{$('#intro').classList.remove('hide');$('#hud').classList.remove('on')};$('#vr').onclick=()=>scene.enterVR();
 $('#day').onclick=()=>{dusk=!dusk;scene.setAttribute('background','color',dusk?'#263a4b':'#9eb7b5');scene.setAttribute('fog','color',dusk?'#263a4b':'#9eb7b5');$('#sun').setAttribute('light','intensity',dusk?.35:2.2)};
 function music(){const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;audio=audio||new AC();audio.resume();const master=audio.createGain();master.gain.value=.055;master.connect(audio.destination);const notes=[220,261.63,329.63,392,329.63,293.66,261.63,196];let step=0;function pluck(){const now=audio.currentTime,osc=audio.createOscillator(),gain=audio.createGain();osc.type='sine';osc.frequency.value=notes[step++%notes.length];gain.gain.setValueAtTime(.0001,now);gain.gain.exponentialRampToValueAtTime(.18,now+.04);gain.gain.exponentialRampToValueAtTime(.0001,now+1.6);osc.connect(gain);gain.connect(master);osc.start(now);osc.stop(now+1.7);if(audioOn)audio.timer=setTimeout(pluck,560)}audioOn=true;pluck();$('#music').textContent='♫ Sound on'}$('#music').onclick=()=>{if(!audioOn){music()}else{audioOn=false;clearTimeout(audio?.timer);$('#music').textContent='♫ Sound off'}};
 function selectInitial(){select(0)}scene.addEventListener('loaded',selectInitial);if(scene.hasLoaded)selectInitial();
+function animateMarket(){const t=performance.now()*.001;crowd.forEach((p,i)=>{if(p.userData.legs)p.userData.legs.forEach((leg,j)=>{leg.rotation.x=Math.sin(t*2.1+p.userData.phase+j*Math.PI)*.22})});birds.forEach((b,i)=>{b.position.x=-10+((t*1.15+i*4)%22);b.position.y=10+Math.sin(t*2+i)*.5;b.rotation.y=Math.sin(t+i)*.12;b.children.slice(1).forEach((w,j)=>w.rotation.z=Math.sin(t*8+i)*.55*(j?1:-1))});requestAnimationFrame(animateMarket)}animateMarket();
 })();
 </script></body></html>

@@ -65,8 +65,14 @@ for(let level=0;level<4;level++){const y=level*LEVEL,g=new THREE.Group();buildin
   for(let end of [-1,1]){const z=end*(INNER_D/2);box(g,0,y+1.02,z,INNER_W,.10,.10,wood2);box(g,0,y+1.85,z,INNER_W,.12,.12,wood2);for(let x=-INNER_W/2;x<=INNER_W/2;x+=1.8)box(g,x,y+.92,z,.10,1.85,.10,liftMetal)}
  }
  // stall modules occupy the full perimeter galleries on all floors, not just facade decoration.
- for(let side of [-1,1])for(let i=0;i<10;i++){const x=side*(INNER_W/2+5.8),z=-D/2+5+i*6.1;const counter=box(g,x,y+.72,z,3.1,1.35,3.2,wood);box(g,x,y+1.45,z,3.25,.16,3.3,wood2);for(let k=0;k<9;k++)sphere(g,x-1.1+(k%5)*.52,y+1.68,z-.65+Math.floor(k/5)*.65,.22,new THREE.MeshStandardMaterial({color:['#c94e32','#e2b33b','#71924a','#b75b4c'][k%4],roughness:.8}));box(g,x,y+2.55,z,3.15,.12,3.2,level%2?roofMat:wood2)}
- for(let side of [-1,1])for(let i=0;i<5;i++){const z=side*(INNER_D/2+6.5),x=-W/2+7+i*10;box(g,x,y+.7,z,3.5,1.25,3,wood);box(g,x,y+1.38,z,3.6,.14,3.1,wood2);for(let k=0;k<6;k++)sphere(g,x-.9+(k%3)*.85,y+1.6,z-.5+Math.floor(k/3)*.7,.22,new THREE.MeshStandardMaterial({color:['#c94e32','#e2b33b','#71924a'][k%3]}))}
+ for(let side of [-1,1])for(let i=0;i<10;i++){const x=side*(INNER_W/2+5.8),z=-D/2+5+i*6.1;
+ // Human-scale vendor counter: 0.90 m worktop, compact footprint and reachable produce display.
+ box(g,x,y+.46,z,2.55,.86,2.35,wood);box(g,x,y+.91,z,2.68,.10,2.45,wood2);
+ for(let k=0;k<9;k++)sphere(g,x-.82+(k%5)*.40,y+1.12,z-.48+Math.floor(k/5)*.58,.16,new THREE.MeshStandardMaterial({color:['#c94e32','#e2b33b','#71924a','#b75b4c'][k%4],roughness:.8}));
+ box(g,x,y+2.12,z,2.55,.10,2.35,level%2?roofMat:wood2)}
+ for(let side of [-1,1])for(let i=0;i<5;i++){const z=side*(INNER_D/2+6.5),x=-W/2+7+i*10;
+ box(g,x,y+.45,z,2.75,.84,2.25,wood);box(g,x,y+.90,z,2.86,.10,2.35,wood2);
+ for(let k=0;k<6;k++)sphere(g,x-.72+(k%3)*.72,y+1.10,z-.42+Math.floor(k/3)*.62,.16,new THREE.MeshStandardMaterial({color:['#c94e32','#e2b33b','#71924a'][k%3]}))}
  // floor band, projecting verandah and stone cornice.
  box(g,0,y+LEVEL-.13,frontZ,W+.9,.28,.9,brick);box(g,0,y+LEVEL-.13,backZ,W+.9,.28,.9,brick);
  for(let side of [-1,1])box(g,side*(W/2),y+LEVEL-.13,0,.9,.28,D,brick);

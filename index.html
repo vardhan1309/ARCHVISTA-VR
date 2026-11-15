@@ -99,6 +99,7 @@ arch(floorGroups[0],0,0,D/2+.1,13,LEVEL*1.2,.75,plaster);box(floorGroups[0],0,LE
 
 // Roof is a separate scene group so floor-isolation mode can hide it cleanly.
 const roofGroup=new THREE.Group();building.add(roofGroup);
+const lanternStart=roofGroup.children.length;
 // Ventilated courtyard roof lantern inspired by the reference: a light-filtering jali canopy around a clear open-to-sky central slot.
 // Jali lantern is lowered onto the roof perimeter, aligned with the roof wings rather than floating above them; a 3.2 m slot remains open for stack ventilation.
 const lanternY=TOP+4.82,lanternFrame=mat('#8b573d',.8),lanternLattice=mat('#d7b58c',.78);
@@ -127,6 +128,9 @@ for(let side of [-1,1]){
 }
 // Keep a genuinely open longitudinal slot through the middle of the skylight for free air movement.
 box(roofGroup,0,lanternY-.02,0,.12,.12,INNER_D,wood2);
+ // Pitch each half of the jali canopy to the same 0.20 rad roof inclination; the centre acts as the ridge.
+ for(const mesh of roofGroup.children.slice(lanternStart)){const side=mesh.position.x<-.02?-1:mesh.position.x>.02?1:0;if(side){const a=side*.20,px=mesh.position.x,py=mesh.position.y-lanternY;mesh.position.x=Math.cos(a)*px-Math.sin(a)*py;mesh.position.y=lanternY+Math.sin(a)*px+Math.cos(a)*py;mesh.rotation.z+=a}}
+
 
 
 // roof pavilion: pitched terracotta roof over connected wings, steel/timber trusses and clerestory.

@@ -135,26 +135,14 @@ for(let x=-W/2-1;x<=W/2+1;x+=6){const post=box(roofGroup,x,TOP+2.0,0,.22,3.5,.22
 for(let z=-D/2;z<=D/2;z+=8){for(let side of [-1,1]){const beam=box(roofGroup,side*(INNER_W/2+(W-INNER_W)/4),TOP+3.65,z,(W-INNER_W)/2+1,.22,.22,dark);beam.castShadow=true}}
  // Load-bearing posts align with the outer arcade grid and carry the roof edge beams down to the top-floor slab.
  for(let x=-W/2;x<=W/2;x+=9){
-  for(let z of [-D/2-1,D/2+1]){
-   box(roofGroup,x,TOP+2.125,z,.48,4.5,.48,brick);
-   box(roofGroup,x,TOP+.28,z,.86,.34,.86,stone);
-   box(roofGroup,x,TOP+4.28,z,.78,.28,.78,wood2);
-  }
+ const side=x<0?-1:1,angle=side*.20,localX=x-side*W/4;
+ const roofUnderside=TOP+4.5+Math.sin(angle)*localX-.14,baseY=TOP+.45,postH=roofUnderside-baseY;
+ for(let z of [-D/2-1,D/2+1]){box(roofGroup,x,baseY+postH/2,z,.48,postH,.48,brick);box(roofGroup,x,TOP+.28,z,.86,.34,.86,stone);box(roofGroup,x,roofUnderside-.12,z,.78,.24,.78,wood2)}
  }
- for(let z=-D/2;z<=D/2;z+=10){
-  for(let x of [-W/2-1,W/2+1]){
-   box(roofGroup,x,TOP+2.125,z,.48,4.5,.48,brick);
-   box(roofGroup,x,TOP+.28,z,.86,.34,.86,stone);
-   box(roofGroup,x,TOP+4.28,z,.78,.28,.78,wood2);
-  }
- }
+ for(let z=-D/2;z<=D/2;z+=10){for(let side of [-1,1]){const roofUnderside=TOP+4.5+Math.sin(side*.20)*(-side*W/4)-.14,baseY=TOP+.45,postH=roofUnderside-baseY,x=side*(W/2+1);box(roofGroup,x,baseY+postH/2,z,.48,postH,.48,brick);box(roofGroup,x,TOP+.28,z,.86,.34,.86,stone);box(roofGroup,x,roofUnderside-.12,z,.78,.24,.78,wood2)}}
  // A second line of columns around the atrium edge supports the inner roof truss.
- for(let x of [-INNER_W/2-1,INNER_W/2+1])for(let z=-INNER_D/2;z<=INNER_D/2;z+=9){
-  box(roofGroup,x,TOP+2.125,z,.38,4.5,.38,brick);
-  box(roofGroup,x,TOP+.28,z,.72,.34,.72,stone);
-  box(roofGroup,x,TOP+4.28,z,.68,.28,.68,wood2);
- }
-// Four roof wings wrap the courtyard; the centre remains open to the sky.
+ for(let x of [-INNER_W/2-1,INNER_W/2+1])for(let z=-INNER_D/2;z<=INNER_D/2;z+=9){const side=x<0?-1:1,angle=side*.20,localX=x-side*W/4,roofUnderside=TOP+4.5+Math.sin(angle)*localX-.14,baseY=TOP+.45,postH=roofUnderside-baseY;box(roofGroup,x,baseY+postH/2,z,.38,postH,.38,brick);box(roofGroup,x,TOP+.28,z,.72,.34,.72,stone);box(roofGroup,x,roofUnderside-.12,z,.68,.24,.68,wood2)}
+ // Four roof wings wrap the courtyard; the centre remains open to the sky.
 for(let side of [-1,1]){for(let z of [-(D+INNER_D)/4,(D+INNER_D)/4]){const wing=box(roofGroup,side*W/4,TOP+4.5,z,W/2+2,.25,(D-INNER_D)/2+1,roofMat);wing.rotation.z=side===-1?-.20:.20}}
 for(let side of [-1,1]){const wing=box(roofGroup,side*(W+INNER_W)/4,TOP+4.5,0,(W-INNER_W)/2+1,.25,INNER_D+1,roofMat);wing.rotation.z=side===-1?-.20:.20}
 for(let side of [-1,1])for(let z of [-(D+INNER_D)/4,(D+INNER_D)/4])for(let x=-W/2;x<=W/2;x+=3.2){const beam=box(roofGroup,x,TOP+4.55,z,.09,.09,(D-INNER_D)/2,wood2);beam.rotation.z=x<0?-.20:.20}

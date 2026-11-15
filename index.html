@@ -30,7 +30,7 @@ const W=54,D=70,INNER_W=20,INNER_D=36,LEVEL=4.25,BASE=-4.6,TOP=4*LEVEL;
 box(site,0,-.42,0,100,.35,112,groundMat,false);
 // basement excavation plinth and retaining walls; lower floor remains part of same building model.
 const basement=new THREE.Group();building.add(basement);box(basement,0,BASE-.22,0,W,.44,D,dark);
-box(basement,-W/2,BASE+1.9,0,.55,4,D,stone);for(const z of [-D/2,2])box(basement,W/2,BASE+1.9,(z-D/2)/2,.55,4,z===-D/2?D/2+16: D/2-2,stone);
+box(basement,-W/2,BASE+1.9,0,.55,4,D,stone);box(basement,W/2,BASE+1.9,-13.5,.55,4,43,stone);box(basement,W/2,BASE+1.9,30.5,.55,4,9,stone);
 for(const z of [-D/2,D/2])box(basement,0,BASE+1.9,z,W,4,.55,stone);
 const basementCeiling=box(basement,0,BASE+3.85,0,W,.35,D,stone);
 for(let i=0;i<8;i++){const x=-22+i*6.2;box(basement,x,BASE+1.4,-D/2+.5,4.5,2.5,.2,wood);box(basement,x,BASE+2.75,-D/2+.65,4.1,.22,.2,wood2)}

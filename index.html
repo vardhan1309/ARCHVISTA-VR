@@ -83,7 +83,31 @@ for(let i=0;i<8;i++)person(basement,-23+(i%4)*13,BASE,-8+Math.floor(i/4)*8,['#a9
 // Bilingual vendor furniture: timber produce cart with sliding crate, mesh cabinet, scale and digital display.
 const stallNames=[['VEGETABLES','కూరగాయలు'],['FRUITS','పండ్లు'],['FISH','చేపలు'],['CHICKEN','చికెన్'],['FLOWERS','పూలు'],['SPICES','మసాలాలు'],['MEAT','మాంసం'],['GROCERIES','కిరాణా'],['DAIRY','పాల ఉత్పత్తులు'],['SNACKS','తినుబండారాలు']];
 function labelTexture(en,te){const cv=document.createElement('canvas');cv.width=512;cv.height=150;const ctx=cv.getContext('2d');ctx.fillStyle='#243a32';ctx.fillRect(0,0,512,150);ctx.strokeStyle='#d8a477';ctx.lineWidth=7;ctx.strokeRect(5,5,502,140);ctx.fillStyle='#fff0d8';ctx.textAlign='center';ctx.font='bold 34px Arial';ctx.fillText(en,256,57);ctx.fillStyle='#f0c49b';ctx.font='bold 38px Arial';ctx.fillText(te,256,112);const tex=new THREE.CanvasTexture(cv);tex.colorSpace=THREE.SRGBColorSpace;return new THREE.MeshBasicMaterial({map:tex,side:THREE.DoubleSide})}
-function produceCart(parent,x,y,z,type){const g=new THREE.Group();g.position.set(x,y,z);parent.add(g);const cabinet=mat('#a9784e',.75),edge=mat('#d1ad7c',.7),meshMat=mat('#47624c',.8),screen=mat('#172a29',.3);box(g,0,.72,0,2.9,1.35,2.05,cabinet);box(g,0,1.42,-.05,3.05,.15,2.18,edge);box(g,0,.7,1.04,2.15,.78,.08,meshMat);box(g,0,.7,1.095,1.9,.55,.025,screen,false);for(let k=0;k<6;k++)box(g,-.85+k*.34,.7,1.12,.025,.5,.02,edge,false);for(let s of [-1,1])for(let z2 of [-.72,.72]){const wheel=new THREE.Mesh(new THREE.CylinderGeometry(.19,.19,.12,14),rubber);wheel.rotation.z=Math.PI/2;wheel.position.set(s*1.43,.2,z2);g.add(wheel)}box(g,0,1.66,-.05,2.65,.1,1.75,edge);for(let k=0;k<12;k++)sphere(g,-1.05+(k%6)*.42,1.85,-.55+Math.floor(k/6)*.8,.2,new THREE.MeshStandardMaterial({color:['#d7a72e','#b94c36','#71934b','#e6bd51'][k%4]}));box(g,0,2.55,-.72,.18,.95,.18,edge);box(g,0,3.02,-.72,.72,.65,.12,screen);box(g,0,3.02,-.64,.58,.48,.025,mat('#75b7a0',.25));for(let s of [-1,1])box(g,s*1.32,.83,-.2,.12,1.2,.12,edge);return g}
+function produceCart(parent,x,y,z,type){
+ const g=new THREE.Group();g.position.set(x,y,z);parent.add(g);
+ const cabinet=mat('#b58a5c',.72),edge=mat('#dfc49a',.62),darkWood=mat('#765034',.78),meshMat=mat('#496b50',.82),screen=mat('#172b2a',.25),steel=mat('#89918b',.42,.65),rubberMat=mat('#242827',.92);
+ // Main timber carcass and thick working counter, matching the user's designed mobile produce cart.
+ box(g,0,.91,0,3.05,1.55,2.08,cabinet);box(g,0,1.72,-.02,3.18,.16,2.2,edge);
+ box(g,0,1.78,-.02,2.98,.055,2.02,darkWood);
+ // Three front cabinet doors with framed mesh ventilation windows and brass pulls.
+ for(let i=0;i<3;i++){const dx=-.98+i*.98;box(g,dx,.91,1.065,.91,1.18,.075,edge);box(g,dx,.91,1.11,.76,1.02,.035,darkWood);box(g,dx,.91,1.135,.63,.78,.025,meshMat);for(let k=0;k<8;k++)box(g,dx-.27+k*.077,.91,1.155,.018,.73,.018,steel,false);box(g,dx+.29,.91,1.17,.045,.16,.055,steel,false)}
+ // Open lower storage / pull-out produce crate visible behind the mesh cabinet.
+ box(g,0,.39,.02,2.35,.58,1.45,meshMat);for(let s of [-1,1])box(g,s*1.18,.39,.02,.09,.72,1.55,edge);
+ box(g,0,.42,.72,1.92,.48,.1,steel);for(let k=0;k<12;k++)box(g,-.88+k*.16,.42,.78,.025,.4,.025,edge,false);
+ // Pull-out front display tray and sliding runner rails.
+ box(g,0,1.99,.83,2.72,.12,.72,edge);box(g,0,2.08,1.17,2.48,.12,.12,steel);
+ for(let s of [-1,1]){box(g,s*1.22,1.99,.83,.09,.2,.82,steel);box(g,s*1.35,.2,-.68,.11,.38,.11,steel)}
+ // Divided produce display bins on the countertop.
+ for(let k=0;k<4;k++)box(g,-1.1+k*.73,2.12,-.08,.055,.32,1.6,edge);
+ for(let k=0;k<18;k++){const col=['#d6a42e','#b94732','#71924a','#e7c45b','#a94b3d'][k%5];sphere(g,-1.12+(k%6)*.45,2.31+Math.floor(k/6)*.08,-.58+Math.floor(k/6)*.48,.19,mat(col,.8))}
+ // Retractable support feet and four industrial lockable castors.
+ for(let s of [-1,1])for(let zz of [-.76,.76]){box(g,s*1.3,.17,zz,.09,.32,.09,steel);const w=new THREE.Mesh(new THREE.CylinderGeometry(.2,.2,.14,18),rubberMat);w.rotation.z=Math.PI/2;w.position.set(s*1.43,.17,zz);g.add(w);const hub=new THREE.Mesh(new THREE.CylinderGeometry(.075,.075,.15,14),steel);hub.rotation.z=Math.PI/2;hub.position.copy(w.position);g.add(hub)}
+ // Stainless weighing platform, upright digital scale mast and readable display.
+ box(g,0,2.2,-.78,.95,.09,.72,steel);box(g,0,2.68,-.82,.09,.92,.09,steel);box(g,0,3.13,-.82,.72,.72,.16,screen);box(g,0,3.13,-.725,.57,.5,.035,mat('#7db9a0',.24));
+ for(let k=0;k<4;k++)box(g,-.18+(k%2)*.16,3.2-Math.floor(k/2)*.13,-.7,.1,.035,.015,mat('#b9e2c6',.25));
+ // Branded sign panel remains a separate stall sign above the furniture.
+ return g
+}
 for(let level=0;level<4;level++){const group=floorGroups[level];let idx=0;for(let side of [-1,1])for(let i=0;i<10;i++){const x=side*(INNER_W/2+5.8),z=-D/2+5+i*6.1;const n=stallNames[(i+(side===1?4:0)+level*2)%stallNames.length];produceCart(group,x,level*LEVEL,z,n);const plate=new THREE.Mesh(new THREE.PlaneGeometry(2.8,.82),labelTexture(n[0],n[1]));plate.position.set(x,level*LEVEL+3.08,z+1.65);group.add(plate);idx++}}
 
 // Terracotta jali screens in the upper facade bays: perforated lattice panels between arches.

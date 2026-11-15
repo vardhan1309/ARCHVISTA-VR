@@ -25,22 +25,23 @@ const court=new THREE.Group();building.add(court);
 function box(p,x,y,z,w,h,d,m,cast=true){const o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);o.position.set(x,y,z);o.castShadow=cast;o.receiveShadow=true;p.add(o);return o}
 function sphere(p,x,y,z,r,m){const o=new THREE.Mesh(new THREE.SphereGeometry(r,14,10),m);o.position.set(x,y,z);o.castShadow=true;p.add(o);return o}
 function arch(p,x,y,z,w,h,depth,wallMat=plaster){const r=w*.36,spring=h*.55,s=new THREE.Shape();s.moveTo(-w/2,0);s.lineTo(w/2,0);s.lineTo(w/2,h);s.lineTo(-w/2,h);s.closePath();const hole=new THREE.Path();hole.moveTo(-r,.12);hole.lineTo(r,.12);hole.lineTo(r,spring);hole.absarc(0,spring,r,0,Math.PI,false);hole.lineTo(-r,.12);s.holes.push(hole);const mesh=new THREE.Mesh(new THREE.ExtrudeGeometry(s,{depth,bevelEnabled:false,curveSegments:28}),wallMat);mesh.position.set(x,y,z);mesh.castShadow=true;mesh.receiveShadow=true;p.add(mesh);const ring=new THREE.Mesh(new THREE.TorusGeometry(r+.025,.12,12,44,Math.PI),stone);ring.position.set(x,y+spring,z+depth+.035);p.add(ring);box(p,x-r-.07,y+spring/2,z+depth+.04,.22,spring,.24,stone);box(p,x+r+.07,y+spring/2,z+depth+.04,.22,spring,.24,stone)}
+function archSide(p,x,y,z,w,h,depth,wallMat=plaster){const holder=new THREE.Group();holder.position.set(x,y,z);holder.rotation.y=Math.PI/2;p.add(holder);arch(holder,0,0,0,w,h,depth,wallMat)}
 const W=54,D=70,INNER_W=20,INNER_D=36,LEVEL=4.25,BASE=-4.6,TOP=4*LEVEL;
-box(site,0,-5.15,0,100,.35,112,groundMat,false);
+box(site,0,-.42,0,100,.35,112,groundMat,false);
 // basement excavation plinth and retaining walls; lower floor remains part of same building model.
 const basement=new THREE.Group();building.add(basement);box(basement,0,BASE-.22,0,W,.44,D,dark);
 for(const x of [-W/2,W/2])box(basement,x,BASE+1.9,0,.55,4,D,stone);
 for(const z of [-D/2,D/2])box(basement,0,BASE+1.9,z,W,4,.55,stone);
-box(basement,0,BASE+3.85,0,W,.35,D,stone);
+const basementCeiling=box(basement,0,BASE+3.85,0,W,.35,D,stone);
 for(let i=0;i<8;i++){const x=-22+i*6.2;box(basement,x,BASE+1.4,-D/2+.5,4.5,2.5,.2,wood);box(basement,x,BASE+2.75,-D/2+.65,4.1,.22,.2,wood2)}
 // one connected floor plate with a central open-to-sky atrium; all wings are structurally joined.
 const floorGroups=[];
 for(let level=0;level<4;level++){const y=level*LEVEL,g=new THREE.Group();building.add(g);floorGroups.push(g);
  // floor slab is a single ring-shaped plate with four connected wings.
- box(g,0,y-.18,-(D-INNER_D)/4,W,.36,(D-INNER_D)/2,stone);
- box(g,0,y-.18,(D-INNER_D)/4,W,.36,(D-INNER_D)/2,stone);
- box(g,-(W-INNER_W)/4,y-.18,0,(W-INNER_W)/2,.36,INNER_D,stone);
- box(g,(W-INNER_W)/4,y-.18,0,(W-INNER_W)/2,.36,INNER_D,stone);
+ box(g,0,y-.18,-(D+INNER_D)/4,W,.36,(D-INNER_D)/2,stone);
+ box(g,0,y-.18,(D+INNER_D)/4,W,.36,(D-INNER_D)/2,stone);
+ box(g,-(W+INNER_W)/4,y-.18,0,(W-INNER_W)/2,.36,INNER_D,stone);
+ box(g,(W+INNER_W)/4,y-.18,0,(W-INNER_W)/2,.36,INNER_D,stone);
  // continuous outer walls and inner atrium gallery walls are cut into repeated arched bays.
  const frontZ=D/2,backZ=-D/2;
  // Thick masonry arcade walls with deep reveals: arches are openings cut into a continuous wall, not freestanding ribs.
@@ -49,7 +50,7 @@ for(let level=0;level<4;level++){const y=level*LEVEL,g=new THREE.Group();buildin
    // recessed timber shop sign and warm display lighting within each arched bay
    box(g,x,y+3.35,frontZ-.88,2.9,.42,.12,wood);const lamp=new THREE.PointLight('#ffd39b',1.2,5);lamp.position.set(x,y+2.8,frontZ-1.35);g.add(lamp);
  }
- for(let side of [-1,1])for(let i=0;i<14;i++){const z=-D/2+2.6+i*4.8;arch(g,side*(W/2-.72),y,z,4.05,LEVEL-.12,.82,plaster);
+ for(let side of [-1,1])for(let i=0;i<14;i++){const z=-D/2+2.6+i*4.8;archSide(g,side*(W/2-.72),y,z,4.05,LEVEL-.12,.82,plaster);
    if(i%3!==1){const pane=box(g,side*(W/2-1.02),y+1.35,z, .1,2.65,3.2,glass);for(let s of [-1,1])box(g,side*(W/2-.91),y+1.35,z+s*1.58,.18,2.75,.1,wood2);box(g,side*(W/2-.91),y+2.72,z,.18,.12,3.2,wood2)}
  }
  // gallery railings facing the central atrium.
@@ -182,7 +183,7 @@ for(let i=0;i<8;i++){const x=-8+i*2.3,z=(i%2?1:-1)*16;tree(court,x,.2,z,.48)}
 for(let z=-28;z<=28;z+=8)for(let side of [-1,1]){const x=side*24;box(site,x,.48,z,3.5,.65,2.2,stone);box(site,x,.84,z,3.35,.12,2.05,wood2);for(let k=0;k<5;k++)sphere(site,x-1.2+k*.6,1.15,z,.32,gardenMats[k%3]);const bollard=new THREE.PointLight('#ffd6a0',.7,5);bollard.position.set(x+side*2,1.2,z);nightLights.add(bollard)}
 
 // floor controls show selected floor isolated; SHOW WHOLE MODEL restores the complete unified mass.
-let selected='all',walking=false,keys={};function setLevel(value){selected=value;const n=value==='all'?null:Number(value);floorGroups.forEach((g,i)=>g.visible=n===null||i===n);basement.visible=n===null||n===-1;roofGroup.visible=n===null;court.visible=n===null||n>=0;ramp.visible=n===null||n===-1;site.children.forEach((obj)=>{if(obj!==building)obj.visible=n===null});nightLights.visible=nightMode;$('#zone').textContent=value==='all'?'COMPLETE BUILDING · BASEMENT + 4 FLOORS':value==='-1'?'BASEMENT LEVEL · B1':['GROUND FLOOR · 00','FIRST FLOOR · 01','SECOND FLOOR · 02','THIRD FLOOR · 03'][n];$('#title').textContent=value==='all'?'Poorna Market · Complete Model':value==='-1'?'Basement · Services & Storage':['Ground Floor · Public Market','First Floor · Trading Gallery','Second Floor · Trading Gallery','Third Floor · Food & Community'][n];$('#description').textContent=value==='all'?'One connected building with a basement and four floors above ground, a central atrium, continuous arched facades, internal galleries and vendor spaces.':value==='-1'?'Below-grade basement level for service access, storage, loading and building support spaces.':['Main public market floor with a monumental entrance arch, continuous shop arcade and central atrium.','Upper trading level with connected galleries, arched openings and vendor counters.','Upper trading level with perimeter shops and views into the central atrium.','Top occupied floor with market uses beneath the pitched roof structure.'][n];document.querySelectorAll('[data-level]').forEach(b=>b.classList.toggle('active',b.dataset.level===String(value)));if(value!=='all'){const y=n===-1?BASE+1:n*LEVEL+1.7;orbit.target.set(0,y,0);camera.position.set(62,y+82,78);orbit.minDistance=28;orbit.maxDistance=125;orbit.update()}else{orbit.target.set(0,8,0);camera.position.set(65,49,76);orbit.minDistance=14;orbit.maxDistance=155;orbit.update()}}
+let selected='all',walking=false,keys={};function setLevel(value){selected=value;const n=value==='all'?null:Number(value);floorGroups.forEach((g,i)=>g.visible=n===null||i===n);basement.visible=n===null||n===-1;basementCeiling.visible=n===null;roofGroup.visible=n===null;court.visible=n===null||n>=0;ramp.visible=n===null||n===-1;site.children.forEach((obj)=>{if(obj!==building)obj.visible=n===null});nightLights.visible=nightMode;$('#zone').textContent=value==='all'?'COMPLETE BUILDING · BASEMENT + 4 FLOORS':value==='-1'?'BASEMENT LEVEL · B1':['GROUND FLOOR · 00','FIRST FLOOR · 01','SECOND FLOOR · 02','THIRD FLOOR · 03'][n];$('#title').textContent=value==='all'?'Poorna Market · Complete Model':value==='-1'?'Basement · Services & Storage':['Ground Floor · Public Market','First Floor · Trading Gallery','Second Floor · Trading Gallery','Third Floor · Food & Community'][n];$('#description').textContent=value==='all'?'One connected building with a basement and four floors above ground, a central atrium, continuous arched facades, internal galleries and vendor spaces.':value==='-1'?'Below-grade basement level for service access, storage, loading and building support spaces.':['Main public market floor with a monumental entrance arch, continuous shop arcade and central atrium.','Upper trading level with connected galleries, arched openings and vendor counters.','Upper trading level with perimeter shops and views into the central atrium.','Top occupied floor with market uses beneath the pitched roof structure.'][n];document.querySelectorAll('[data-level]').forEach(b=>b.classList.toggle('active',b.dataset.level===String(value)));if(value!=='all'){const y=n===-1?BASE+1:n*LEVEL+1.7;orbit.target.set(0,y,0);camera.position.set(n===-1?0:62,y+82,n===-1?1:78);orbit.minDistance=28;orbit.maxDistance=125;orbit.update()}else{orbit.target.set(0,8,0);camera.position.set(65,49,76);orbit.minDistance=14;orbit.maxDistance=155;orbit.update()}}
 document.querySelectorAll('[data-level]').forEach(b=>b.onclick=()=>setLevel(b.dataset.level));$('#enter').onclick=()=>$('#intro').classList.add('hide');$('#home').onclick=()=>$('#intro').classList.remove('hide');
 $('#walk').onclick=()=>{walking=true;orbit.enabled=false;$('#walk').classList.add('active');$('#orbit').classList.remove('active');camera.position.set(0,1.7,28);camera.lookAt(0,1.7,0);$('#description').textContent='Walk mode: use W A S D or arrow keys to explore the central market atrium.'};$('#orbit').onclick=()=>{walking=false;orbit.enabled=true;$('#orbit').classList.add('active');$('#walk').classList.remove('active');setLevel(selected)};
 $('#lighting').onclick=()=>{nightMode=!nightMode;scene.background.set(nightMode?'#101a25':'#b8c0bd');scene.fog.color.copy(scene.background);sun.intensity=nightMode?.18:3.1;fill.intensity=nightMode?.12:.8;renderer.toneMappingExposure=nightMode?.82:1.13;nightLights.visible=nightMode;$('#lighting').textContent=nightMode?'☾ NIGHT VIEW':'☼ DAY VIEW';$('#lighting').classList.toggle('active',nightMode)};

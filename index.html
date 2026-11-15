@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#202923"><meta name="archvista-build" content="poorna-unified-building-b1-g3-v9"><title>ARCHVISTA VR | Poorna Market</title><link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet"><style>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#202923"><meta name="archvista-build" content="poorna-unified-building-b1-g3-v10"><title>ARCHVISTA VR | Poorna Market</title><link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet"><style>
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#222b2b;color:#f2eee5;font-family:Manrope,Arial,sans-serif}#view{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}.top{position:fixed;z-index:5;inset:0 0 auto;height:68px;padding:0 3vw;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(#111915c9,transparent)}.brand{font:11px 'DM Mono',monospace;letter-spacing:.18em}.brand b,.kicker{color:#d69a73}.actions{display:flex;gap:7px}.ui{background:#17221de8;border:1px solid #eeeadd38;color:#f1eee5;padding:10px 13px;font:9px 'DM Mono',monospace;letter-spacing:.06em;cursor:pointer;border-radius:2px}.ui.active,.ui:hover{border-color:#d69a73;color:#f3c5a3}.intro{position:fixed;inset:0;z-index:10;display:grid;place-items:center;padding:22px;background:linear-gradient(90deg,#141b16f2,#141b1680),radial-gradient(circle at 76% 40%,#866044,transparent 45%)}.intro.hide{display:none}.intro-card{max-width:730px;border-left:2px solid #c88760;padding:20px 32px}.kicker{font:10px 'DM Mono',monospace;letter-spacing:.2em}.intro h1{font-size:clamp(48px,8vw,94px);line-height:.9;letter-spacing:-.075em;margin:20px 0}.intro h1 em{font-style:normal;color:#d49a73}.intro p{max-width:550px;color:#d2d1c6;line-height:1.8;font-size:13px}.intro .ui{margin:18px 8px 0 0;padding:14px 19px}.intro .primary{background:#d49a73;color:#1a211c;border-color:#d49a73}.floors{position:fixed;z-index:6;left:3vw;top:88px;display:flex;flex-direction:column;gap:5px}.floors button{width:120px;text-align:left}.floors button.active{background:#a66e4b66;border-color:#d69a73}.info{position:fixed;z-index:5;right:3vw;bottom:82px;width:min(310px,86vw);padding:15px 17px;background:#17221de8;border:1px solid #eeeadd38;backdrop-filter:blur(14px)}.info small{font:9px 'DM Mono',monospace;color:#d69a73;letter-spacing:.16em}.info h2{font-size:22px;font-weight:500;margin:8px 0}.info p{font-size:11px;line-height:1.65;color:#c6c8bc;margin:0}.bottom{position:fixed;z-index:5;bottom:16px;left:3vw;right:3vw;display:flex;justify-content:space-between;align-items:center;font:8px 'DM Mono',monospace;color:#d0d1c6;pointer-events:none}.bottom span{background:#10171399;padding:9px 11px}.bottom div{display:flex;gap:5px;pointer-events:auto}.bottom button{pointer-events:auto}@media(max-width:650px){.top{padding:0 9px;height:55px}.brand{font-size:8px}.ui{font-size:7px;padding:8px}.floors{top:65px;left:8px}.floors button{width:95px}.info{right:8px;bottom:78px;width:205px;padding:11px}.info h2{font-size:17px}.info p{font-size:9px}.bottom{left:8px;right:8px;bottom:8px;font-size:6px}.bottom>span{max-width:40%;line-height:1.5}}
 </style></head><body><canvas id="view"></canvas><header class="top"><div class="brand">ARCHVISTA <b>/</b> POORNA MARKET</div><div class="actions"><button class="ui" id="lighting">☼ DAY / NIGHT</button><button class="ui" id="home">⌂ INTRO</button></div></header>
 <section class="intro" id="intro"><div class="intro-card"><div class="kicker">ARCHVISTA VR · VISAKHAPATNAM, INDIA</div><h1>POORNA<br><em>MARKET</em></h1><p>A single connected market building: one basement level and four complete floors above ground. Inspired by the historic arched character of Poorna Market and reimagined with a continuous arcade, internal atrium, upper galleries and active vendor spaces.</p><button class="ui primary" id="enter" onclick="document.getElementById('intro').classList.add('hide')">EXPLORE THE BUILDING ↗</button><div class="kicker" style="margin-top:22px;color:#b9c0b2">ORBIT TO INSPECT · FLOOR SELECTOR · WALK MODE · META QUEST READY</div></div></section>
@@ -166,6 +166,18 @@ for(let level=1;level<4;level++){const g=floorGroups[level],yy=level*LEVEL+2.05;
   for(let k=0;k<6;k++){const d=box(g,xx+side*.22,yy-.85+k*.34,zz,.10,.05,2.9,stone);d.rotation.z=.45;const e=box(g,xx+side*.22,yy-.85+k*.34,zz,.10,.05,2.9,stone);e.rotation.z=-.45}
  }
 }
+// Continuous masonry corner piers and return bands bind the arcade walls on every storey.
+for(let level=0;level<4;level++){
+ const g=floorGroups[level],y=level*LEVEL;
+ for(const sx of [-1,1])for(const sz of [-1,1]){
+  box(g,sx*(W/2-.22),y+LEVEL/2,sz*(D/2-.18),.62,LEVEL,.72,brick);
+  box(g,sx*(W/2-.22),y+.18,sz*(D/2-.18),.82,.28,.92,stone);
+ }
+ // Continuous lintel/string-course across each elevation, aligned to the same datum.
+ box(g,0,y+LEVEL-.34,D/2-.54,W,.24,.34,brick);
+ box(g,0,y+LEVEL-.34,-D/2+.28,W,.24,.34,brick);
+ for(const sx of [-1,1])box(g,sx*(W/2-.28),y+LEVEL-.34,0,.34,.24,D,brick);
+}
 // Strong continuous floor-level string courses, parapet caps and deep sill ledges reinforce the wall mass.
 for(let level=0;level<4;level++){const g=floorGroups[level],yy=level*LEVEL;box(g,0,yy+.08,D/2+.04,W+.5,.24,.42,stone);box(g,0,yy+LEVEL-.24,D/2+.05,W+1,.32,.7,brick);box(g,0,yy+LEVEL-.38,-D/2-.04,W+.5,.2,.45,stone)}
 
@@ -217,6 +229,62 @@ function vehicle(parent,x,y,z,color,bike=false){const paint=new THREE.MeshStanda
 // Dense, clearly legible parking layout: four car rows and a dedicated two-wheeler bay.
 for(let row=0;row<4;row++)for(let col=0;col<5;col++)vehicle(basement,-21+col*10.5,BASE,-25+row*13,['#d6d0bd','#b94f35','#496d65','#c6a05d'][((row*5+col)%4)],false);
 for(let row=0;row<2;row++)for(let col=0;col<9;col++)vehicle(basement,-22+col*5.4,BASE,29+row*4.4,['#315c51','#b34e36','#d1a24e','#526d82'][((row*9+col)%4)],true);
+ 
+// OPEN SURFACE PARKING on the front forecourt: marked bays, cars and two-wheeler parking.
+const openParking=new THREE.Group();site.add(openParking);
+const bayLine=mat('#e8d5a8',.8),parkingAsphalt=mat('#827965',.98);
+box(openParking,0,-.20,46,88,.12,18,parkingAsphalt,false);
+for(let side of [-1,1])for(let i=0;i<4;i++){
+ const x=side*(21+i*6.1);
+ box(openParking,x,-.115,46,5.8,.025,15,bayLine,false);
+ vehicle(openParking,x,.0,46,i%2?'#c8c3b6':'#496d65',false);
+}
+for(let i=0;i<8;i++){
+ const x=-7+i*2;
+ vehicle(openParking,x,.0,54,i%2?'#b94f35':'#d2a34e',true);
+}
+// Pedestrian forecourt markings, shaded seating pockets and bicycle stands.
+for(let x=-42;x<=42;x+=14){
+ const planter=box(site,x,.32,18,4.2,.62,3.5,stone);
+ for(let j=0;j<4;j++)sphere(site,x-1.2+j*.8,.92,18,.34,gardenMats[j%gardenMats.length]);
+ tree(site,x,0,13,.9,(x+42)%6);
+}
+for(let i=0;i<6;i++){
+ const x=-35+i*14;
+ box(site,x,.35,39,4.6,.7,2.4,wood);
+ box(site,x,.75,38.7,4.5,.12,2.3,wood2);
+}
+// Ground-floor market activity: craft demonstration tables, flower sorting, tea/snack kiosk and a small cultural performance plinth.
+const activity= new THREE.Group();building.add(activity);
+function activityTable(x,z,w=3.4){
+ box(activity,x,.72,z,w,1.35,2.2,wood);
+ box(activity,x,.145,z,w+.16,.18,2.35,wood2);
+ for(let k=0;k<8;k++)sphere(activity,x-w*.38+(k%4)*w*.25,1.48,z+(Math.floor(k/4)-.5)*.8,.19,gardenMats[(k+2)%gardenMats.length]);
+}
+activityTable(-16,-4,3.5);activityTable(16,-4,3.5);activityTable(-16,12,3.5);activityTable(16,12,3.5);
+box(activity,0,.22,-27,11,.44,5,stone);
+box(activity,0,.55,-27,9,.22,3.8,wood2);
+// Simple market activity signage panels, positioned over demo counters.
+for(const [x,z] of [[-16,-4],[16,-4],[-16,12],[16,12]]){
+ box(activity,x,2.05,z-1.05,2.9,.72,.12,liftDark);
+ box(activity,x,2.05,z-1.12,2.72,.56,.035,glow('#d5b47b',.35),false);
+}
+// Additional ground-floor visitors: animated walking routes around stalls, court and activity pockets.
+for(let i=0;i<34;i++){
+ const x=-23+(i%17)*2.85,z=-25+Math.floor(i/17)*48;
+ person(floorGroups[0],x,0,z,['#a9543e','#d0a25e','#567765','#73516e','#d7d0bd','#b85f43'][i%6],i%3);
+}
+for(let i=0;i<12;i++){
+ const x=(i%2?1:-1)*(7.5+Math.random()*2),z=-13+Math.floor(i/2)*4.3;
+ person(court,x,.18,z,['#b85f43','#597e70','#c29a57','#765b78'][i%4],i%3);
+}
+// Outdoor pedestrian lighting and planted shade trees around the open parking/arrival court.
+for(let x=-38;x<=38;x+=12){
+ const pole=box(siteNight,x,3.2,34,.14,6.2,.14,dark,false);
+ box(siteNight,x,6.35,34,.72,.16,.72,glow('#ffe0ad',2.6),false);
+ const lamp=new THREE.PointLight('#ffd7a0',1.8,13);lamp.position.set(x,6.1,34);siteNight.add(lamp);
+}
+
 
 // Bilingual vendor furniture: timber produce cart with sliding crate, mesh cabinet, scale and digital display.
 const stallNames=[['VEGETABLES','కూరగాయలు'],['FRUITS','పండ్లు'],['FISH','చేపలు'],['CHICKEN','చికెన్'],['FLOWERS','పూలు'],['SPICES','మసాలాలు'],['MEAT','మాంసం'],['GROCERIES','కిరాణా'],['DAIRY','పాల ఉత్పత్తులు'],['SNACKS','తినుబండారాలు']];

@@ -109,17 +109,17 @@ for(const y of [5.47,8.63])box(marketSign,0,y,D/2+.27,15.8,.16,.12,signBorder);
 const signCanvas=document.createElement('canvas');signCanvas.width=1600;signCanvas.height=330;
 const signCtx=signCanvas.getContext('2d');
 signCtx.clearRect(0,0,1600,330);signCtx.textAlign='center';signCtx.textBaseline='middle';
-signCtx.shadowColor='#ffcf8a';signCtx.shadowBlur=24;
-signCtx.fillStyle='#fff0c8';signCtx.font='600 62px sans-serif';signCtx.fillText('పూర్ణా మార్కెట్',800,70);
-signCtx.font='bold 112px Georgia, serif';signCtx.fillText('POORNA MARKET',800,190);
-signCtx.font='600 38px Georgia, serif';signCtx.fillText('ESTD. 1935',800,278);
+signCtx.shadowColor='transparent';signCtx.shadowBlur=0;
+signCtx.fillStyle='#e6c99b';signCtx.font='500 58px sans-serif';signCtx.fillText('పూర్ణా మార్కెట్',800,70);
+signCtx.font='500 96px Georgia, serif';signCtx.fillText('POORNA MARKET',800,190);
+signCtx.font='500 34px Georgia, serif';signCtx.fillText('ESTD. 1935',800,278);
 const signTexture=new THREE.CanvasTexture(signCanvas);signTexture.colorSpace=THREE.SRGBColorSpace;
-const signFace=new THREE.Mesh(new THREE.PlaneGeometry(14.9,2.95),new THREE.MeshStandardMaterial({map:signTexture,emissiveMap:signTexture,emissive:'#ffd08a',emissiveIntensity:2.4,roughness:.7}));
+const signFace=new THREE.Mesh(new THREE.PlaneGeometry(14.9,2.95),new THREE.MeshStandardMaterial({map:signTexture,emissive:'#5b3820',emissiveIntensity:.22,roughness:.78}));
 signFace.position.set(0,7.05,D/2+.255);marketSign.add(signFace);
-const signHalo=box(marketSign,0,7.05,D/2-.25,16.3,3.55,.08,glow('#ffbf78',1.8),false);
+const signHalo=box(marketSign,0,7.05,D/2-.25,16.3,3.55,.08,glow('#ffbf78',.22),false);
 const signWash=new THREE.Group();nightLights.add(signWash);
-for(const x of [-6.4,-3.2,0,3.2,6.4]){const lamp=new THREE.PointLight('#ffd39a',5.5,18,1.5);lamp.position.set(x,8.9,D/2+2.1);signWash.add(lamp)}
-const signEdge=box(signWash,0,8.78,D/2+.72,15.1,.045,.05,glow('#ffd49b',2.6),false);
+for(const x of [-6.4,-3.2,0,3.2,6.4]){const lamp=new THREE.PointLight('#ffd39a',1.4,14,1.8);lamp.position.set(x,8.9,D/2+2.1);signWash.add(lamp)}
+const signEdge=box(signWash,0,8.78,D/2+.72,15.1,.045,.05,glow('#ffd49b',.55),false);
 signWash.visible=true;
 
 // Roof is a separate scene group so floor-isolation mode can hide it cleanly.

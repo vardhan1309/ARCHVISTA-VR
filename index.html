@@ -41,8 +41,15 @@ for(let level=0;level<4;level++){const y=level*LEVEL,g=new THREE.Group();buildin
  box(g,(W-INNER_W)/4,y-.18,0,(W-INNER_W)/2,.36,INNER_D,stone);
  // continuous outer walls and inner atrium gallery walls are cut into repeated arched bays.
  const frontZ=D/2,backZ=-D/2;
- for(let i=0;i<11;i++){const x=-W/2+2.5+i*5;arch(g,x,y,frontZ-0.48,4.5,LEVEL-.12,.48,level===0?plaster:plaster);arch(g,x,y,backZ,4.5,LEVEL-.12,.48,plaster)}
- for(let side of [-1,1])for(let i=0;i<14;i++){const z=-D/2+2.6+i*4.8;arch(g,side*(W/2-.48),y,z,4.25,LEVEL-.12,.48,plaster); }
+ // Thick masonry arcade walls with deep reveals: arches are openings cut into a continuous wall, not freestanding ribs.
+ for(let i=0;i<11;i++){const x=-W/2+2.5+i*5;arch(g,x,y,frontZ-.72,4.35,LEVEL-.12,.82,plaster);arch(g,x,y,backZ,4.35,LEVEL-.12,.82,plaster);
+   if(i!==5){const glassPanel=box(g,x,y+1.42,frontZ-1.02,3.55,2.75,.10,glass);glassPanel.material=glass;for(let s of [-1,1])box(g,x+s*1.72,y+1.42,frontZ-.92,.10,2.85,.18,wood2);box(g,x,y+2.88,frontZ-.92,3.55,.12,.18,wood2);box(g,x,y+.12,frontZ-.92,3.55,.18,.2,stone);for(let s of [-1,1])box(g,x+s*.88,y+1.4,frontZ-.84,.055,2.65,.06,wood2)}
+   // recessed timber shop sign and warm display lighting within each arched bay
+   box(g,x,y+3.35,frontZ-.88,2.9,.42,.12,wood);const lamp=new THREE.PointLight('#ffd39b',1.2,5);lamp.position.set(x,y+2.8,frontZ-1.35);g.add(lamp);
+ }
+ for(let side of [-1,1])for(let i=0;i<14;i++){const z=-D/2+2.6+i*4.8;arch(g,side*(W/2-.72),y,z,4.05,LEVEL-.12,.82,plaster);
+   if(i%3!==1){const pane=box(g,side*(W/2-1.02),y+1.35,z, .1,2.65,3.2,glass);for(let s of [-1,1])box(g,side*(W/2-.91),y+1.35,z+s*1.58,.18,2.75,.1,wood2);box(g,side*(W/2-.91),y+2.72,z,.18,.12,3.2,wood2)}
+ }
  // gallery railings facing the central atrium.
  for(let side of [-1,1]){box(g,side*(INNER_W/2),y+1.05,0,.18,2,INNER_D,stone);box(g,side*(INNER_W/2),y+1.85,0,.22,.16,INNER_D,wood2);for(let z=-INNER_D/2;z<=INNER_D/2;z+=2.2)box(g,side*(INNER_W/2),y+.95,z,.1,1.7,.1,wood2)}
  for(let end of [-1,1]){box(g,0,y+1.05,end*(INNER_D/2),INNER_W,2,.16,stone);box(g,0,y+1.85,end*(INNER_D/2),INNER_W,.16,.22,wood2)}
@@ -61,8 +68,25 @@ arch(building,0,0,D/2+.1,13,LEVEL*1.2,.75,plaster);box(building,0,LEVEL*1.28,D/2
 const roofY=TOP+.35;box(building,0,roofY,D/2-1,W+3,.45,5,wood);box(building,0,roofY,-D/2+1,W+3,.45,5,wood);box(building,0,roofY,0,INNER_W+5,.4,D+3,wood);
 for(let x=-W/2-1;x<=W/2+1;x+=6){const post=box(building,x,TOP+2.0,0,.22,3.5,.22,dark);const beam=box(building,x,TOP+3.7,0,.2,.2,D+3,wood2);beam.castShadow=true}
 for(let z=-D/2;z<=D/2;z+=8){const beam=box(building,0,TOP+3.65,z,W+3,.22,.22,dark);beam.castShadow=true}
-const roofLeft=box(building,-W/4,TOP+4.5,0,W/2+2,.25,D+6,roofMat);roofLeft.rotation.z=-.11;const roofRight=box(building,W/4,TOP+4.5,0,W/2+2,.25,D+6,roofMat);roofRight.rotation.z=.11;
+const roofLeft=box(building,-W/4,TOP+4.5,0,W/2+2,.25,D+6,roofMat);roofLeft.rotation.z=-.20;const roofRight=box(building,W/4,TOP+4.5,0,W/2+2,.25,D+6,roofMat);roofRight.rotation.z=.20;
+// visible terracotta roof battens and ridge cap give the canopy a pitched tiled-roof reading.
+for(let z=-D/2-2;z<=D/2+2;z+=3.2){for(let side of [-1,1]){const tileLine=box(building,side*W/4,TOP+4.55,z,W/2+1,.09,.12,wood2);tileLine.rotation.z=side===-1?-.20:.20}}box(building,0,TOP+7.35,0,1.1,.35,D+7,roofMat);
 for(let side of [-1,1])for(let i=0;i<10;i++){const x=-W/2+3+i*5.3;box(building,x,TOP+4.15,side*(D/2+1),.16,.2,2.5,wood2)}
+
+// Deep terracotta jali panels integrated into selected upper-storey wall bays, framed by masonry piers.
+const jaliFrame=mat('#a6533a',.9),jaliInset=mat('#c17b58',.86);
+for(let level=1;level<4;level++){
+ const yy=level*LEVEL+2.05;
+ for(let side of [-1,1])for(let bay=0;bay<3;bay++){const zz=-23+bay*23,xx=side*(W/2-.96);
+  box(building,xx,yy,zz,.22,2.5,3.2,jaliFrame);
+  for(let k=0;k<8;k++)box(building,xx+side*.14,yy-1.08+k*.31,zz,.12,.075,3.02,jaliInset);
+  for(let k=0;k<9;k++)box(building,xx+side*.15,yy,zz-1.32+k*.33,.12,2.28,.075,jaliInset);
+  for(let k=0;k<6;k++){const d=box(building,xx+side*.22,yy-0.85+k*.34,zz,.10,.05,2.9,stone);d.rotation.z=.45;const e=box(building,xx+side*.22,yy-0.85+k*.34,zz,.10,.05,2.9,stone);e.rotation.z=-.45}
+ }
+}
+// Strong continuous floor-level string courses, parapet caps and deep sill ledges reinforce the wall mass.
+for(let level=0;level<4;level++){const yy=level*LEVEL;box(building,0,yy+.08,D/2+.04,W+.5,.24,.42,stone);box(building,0,yy+LEVEL-.24,D/2+.05,W+1,.32,.7,brick);box(building,0,yy+LEVEL-.38,-D/2-.04,W+.5,.2,.45,stone)}
+
 // green atrium garden, trees, vines and seating within the unified block.
 for(let i=0;i<8;i++){const x=-7+i*2,z=(i%2?1:-1)*12;const trunk=new THREE.Mesh(new THREE.CylinderGeometry(.13,.22,3,9),wood);trunk.position.set(x,1.5,z);building.add(trunk);for(let j=0;j<7;j++)sphere(building,x+Math.sin(j*2)*.8,3+Math.cos(j*1.7)*.5,z+Math.cos(j*2)*.8,.75,leaf)}
 for(let side of [-1,1])for(let i=0;i<7;i++){const z=-27+i*8,x=side*31;const planter=box(site,x,.35,z,3,.7,3,stone);for(let k=0;k<5;k++)sphere(site,x+(Math.random()-.5)*2,1,z+(Math.random()-.5)*2,.3,leaf)}

@@ -320,9 +320,8 @@ function labelTexture(en,te){const cv=document.createElement('canvas');cv.width=
 function produceCart(parent,x,y,z,type){
  const g=new THREE.Group();g.position.set(x,y,z);parent.add(g);
  const cabinet=mat('#b58a5c',.72),edge=mat('#dfc49a',.62),darkWood=mat('#765034',.78),meshMat=mat('#496b50',.82),screen=mat('#172b2a',.25),steel=mat('#89918b',.42,.65),rubberMat=mat('#242827',.92);
- // Main timber carcass and thick working counter, matching the user's designed mobile produce cart.
- box(g,0,.91,0,3.05,1.55,2.08,cabinet);box(g,0,1.72,-.02,3.18,.16,2.2,edge);
- box(g,0,1.78,-.02,2.98,.055,2.02,darkWood);
+ // Main timber carcass and working counter. The former overhead flat canopy/shelf has been removed so the produce and vendor remain visible.
+ box(g,0,.91,0,3.05,1.55,2.08,cabinet);
  // Three front cabinet doors with framed mesh ventilation windows and brass pulls.
  for(let i=0;i<3;i++){const dx=-.98+i*.98;box(g,dx,.91,1.065,.91,1.18,.075,edge);box(g,dx,.91,1.11,.76,1.02,.035,darkWood);box(g,dx,.91,1.135,.63,.78,.025,meshMat);for(let k=0;k<8;k++)box(g,dx-.27+k*.077,.91,1.155,.018,.73,.018,steel,false);box(g,dx+.29,.91,1.17,.045,.16,.055,steel,false)}
  // Open lower storage / pull-out produce crate visible behind the mesh cabinet.
@@ -351,7 +350,13 @@ for(let level=0;level<4;level++){const group=floorGroups[level];let idx=0;for(le
  for(let shelf=0;shelf<3;shelf++){box(group,bx+(side===1?-.14:.14),level*LEVEL+.72+shelf*.72,z,.42,.10,4.1,wood2);for(let item=0;item<6;item++)sphere(group,bx+(side===1?-.38:.38),level*LEVEL+.94+shelf*.72,z-1.65+item*.65,.16,mat(['#c88e32','#b64b34','#68884a'][(item+shelf)%3],.82))}
  for(let crate=0;crate<2;crate++){box(group,x+(side===1?2:-2),level*LEVEL+.42,z-.65+crate*1.35,.62,.78,.82,wood);for(let slat=0;slat<4;slat++)box(group,x+(side===1?2:-2),level*LEVEL+.28+slat*.16,z-.65+crate*1.35,.68,.035,.88,wood2)}
  const task=new THREE.PointLight('#ffd5a1',1.5,5);task.position.set(x,level*LEVEL+3.1,z);group.add(task);
- const plate=new THREE.Mesh(new THREE.PlaneGeometry(2.8,.82),labelTexture(n[0],n[1]));plate.position.set(x,level*LEVEL+3.08,z+1.65);group.add(plate);idx++}}
+ // Stall nameboard is mounted on two visible vertical timber/metal supports rising from the rear counter edge.
+ for(const sx of [-1,1]){
+  const post=box(group,x+sx*1.08,level*LEVEL+1.82,z+1.65,.075,1.62,.075,wood2);
+  post.castShadow=true;
+  box(group,x+sx*1.08,level*LEVEL+1.05,z+1.65,.16,.10,.16,steel,false);
+ }
+ const plate=new THREE.Mesh(new THREE.PlaneGeometry(2.8,.82),labelTexture(n[0],n[1]));plate.position.set(x,level*LEVEL+2.72,z+1.65);group.add(plate);idx++}}
 
 
 // Lift lobby and stair flights are grouped by floor, so they disappear with every unselected level.

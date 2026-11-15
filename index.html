@@ -89,6 +89,8 @@ for(let level=0;level<4;level++){const y=level*LEVEL,g=floorGroups[level];for(le
 // Monumental entrance portal belongs only to the ground-floor model.
 arch(floorGroups[0],0,0,D/2+.1,13,LEVEL*1.2,.75,plaster);box(floorGroups[0],0,LEVEL*1.28,D/2+.88,17,.75,.32,plaster);box(floorGroups[0],0,LEVEL*1.28,D/2+1.08,14,.38,.08,wood); 
 
+// Roof is a separate scene group so floor-isolation mode can hide it cleanly.
+const roofGroup=new THREE.Group();building.add(roofGroup);
 // Ventilated courtyard roof lantern inspired by the reference: a light-filtering jali canopy around a clear open-to-sky central slot.
 // The four framed panels sit high above the atrium, leaving a continuous 3.2 m-wide opening for stack ventilation.
 const lanternY=TOP+7.15,lanternFrame=mat('#8b573d',.8),lanternLattice=mat('#d7b58c',.78);
@@ -118,8 +120,7 @@ for(let side of [-1,1]){
 // Keep a genuinely open longitudinal slot through the middle of the skylight for free air movement.
 box(roofGroup,0,lanternY-.02,0,.12,.12,INNER_D,wood2);
 
-// Roof is a separate scene group so floor-isolation mode can hide it cleanly.
-const roofGroup=new THREE.Group();building.add(roofGroup);
+
 // roof pavilion: pitched terracotta roof over connected wings, steel/timber trusses and clerestory.
 const roofY=TOP+.35;box(roofGroup,0,roofY,D/2-1,W+3,.45,5,wood);box(roofGroup,0,roofY,-D/2+1,W+3,.45,5,wood);box(roofGroup,0,roofY,0,INNER_W+5,.4,D+3,wood);
 for(let x=-W/2-1;x<=W/2+1;x+=6){const post=box(roofGroup,x,TOP+2.0,0,.22,3.5,.22,dark);const beam=box(roofGroup,x,TOP+3.7,0,.2,.2,D+3,wood2);beam.castShadow=true}

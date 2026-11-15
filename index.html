@@ -64,6 +64,26 @@ for(let level=0;level<4;level++){const y=level*LEVEL,g=new THREE.Group();buildin
  box(g,0,y+LEVEL-.13,frontZ,W+.9,.28,.9,brick);box(g,0,y+LEVEL-.13,backZ,W+.9,.28,.9,brick);
  for(let side of [-1,1])box(g,side*(W/2),y+LEVEL-.13,0,.9,.28,D,brick);
 }
+// Closed terracotta jali infill inside every perimeter arch opening. The curved head follows the arch profile.
+const archJaliMat=mat('#b76545',.88),archJaliHighlight=mat('#d29a70',.82);
+function addArchJali(parent,x,y,z,w,h,depth,rotY=0){
+ const holder=new THREE.Group();holder.position.set(x,y,z);holder.rotation.y=rotY;parent.add(holder);
+ const r=w*.36,spring=h*.55,bar=.065,front=depth+.045;
+ // vertical members terminate exactly at the curved intrados of the arch
+ for(let i=-5;i<=5;i++){const xx=i*(r/5),top=spring+Math.sqrt(Math.max(0,r*r-xx*xx));const height=top-.16;const v=box(holder,xx,.16+height/2,front,bar,height,.075,archJaliMat);v.castShadow=true}
+ // horizontal rails reduce in length as the arch curves inward
+ for(let yy=.42;yy<spring+r-.12;yy+=.48){let span=yy<=spring?r:Math.sqrt(Math.max(0,r*r-(yy-spring)*(yy-spring)));if(span>.12)box(holder,0,yy,front,span*2,bar,.09,archJaliHighlight)}
+ // fine diagonal lattice, kept within the rectangular spring zone
+ for(let yy=.55;yy<spring-.05;yy+=.8){for(let xx=-r+.25;xx<r-.15;xx+=.8){const d=box(holder,xx,yy,front+.055,.055,.78,.055,archJaliMat);d.rotation.z=.72;const e=box(holder,xx,yy,front+.055,.055,.78,.055,archJaliMat);e.rotation.z=-.72}}
+}
+for(let level=0;level<4;level++){
+ const g=floorGroups[level],y=level*LEVEL,h=LEVEL-.12;
+ for(let i=0;i<11;i++){const x=-W/2+2.5+i*5;addArchJali(g,x,y,D/2-.72,4.35,h,.82);addArchJali(g,x,y,-D/2,4.35,h,.82)}
+ for(let side of [-1,1])for(let i=0;i<14;i++){const z=-D/2+2.6+i*4.8;addArchJali(g,side*(W/2-.72),y,z,4.05,h,.82,Math.PI/2)}
+}
+// Jali closure for the monumental ground-floor entrance arch as well.
+addArchJali(floorGroups[0],0,0,D/2+.1,13,LEVEL*1.2,.75);
+// Roof-bearing columns: continuous masonry piers at the outer arcade line and courtyard edge.
 // prominent continuous corner piers and horizontal floor bands bind the floors into one building.
 // Structural piers and cornices are grouped by storey to guarantee isolated floor views.
 for(let level=0;level<4;level++){const y=level*LEVEL,g=floorGroups[level];for(let x of [-W/2,W/2])for(let z of [-D/2,D/2])box(g,x,y+LEVEL/2,z,1.15,LEVEL,1.15,brick);box(g,0,y+LEVEL-.12,D/2+.08,W+1,.34,.8,roofMat)}
@@ -75,6 +95,27 @@ const roofGroup=new THREE.Group();building.add(roofGroup);
 const roofY=TOP+.35;box(roofGroup,0,roofY,D/2-1,W+3,.45,5,wood);box(roofGroup,0,roofY,-D/2+1,W+3,.45,5,wood);box(roofGroup,0,roofY,0,INNER_W+5,.4,D+3,wood);
 for(let x=-W/2-1;x<=W/2+1;x+=6){const post=box(roofGroup,x,TOP+2.0,0,.22,3.5,.22,dark);const beam=box(roofGroup,x,TOP+3.7,0,.2,.2,D+3,wood2);beam.castShadow=true}
 for(let z=-D/2;z<=D/2;z+=8){const beam=box(roofGroup,0,TOP+3.65,z,W+3,.22,.22,dark);beam.castShadow=true}
+ // Load-bearing posts align with the outer arcade grid and carry the roof edge beams down to the top-floor slab.
+ for(let x=-W/2;x<=W/2;x+=9){
+  for(let z of [-D/2-1,D/2+1]){
+   box(roofGroup,x,TOP+2.2,z,.48,4.35,.48,brick);
+   box(roofGroup,x,TOP+.28,z,.86,.34,.86,stone);
+   box(roofGroup,x,TOP+4.28,z,.78,.28,.78,wood2);
+  }
+ }
+ for(let z=-D/2;z<=D/2;z+=10){
+  for(let x of [-W/2-1,W/2+1]){
+   box(roofGroup,x,TOP+2.2,z,.48,4.35,.48,brick);
+   box(roofGroup,x,TOP+.28,z,.86,.34,.86,stone);
+   box(roofGroup,x,TOP+4.28,z,.78,.28,.78,wood2);
+  }
+ }
+ // A second line of columns around the atrium edge supports the inner roof truss.
+ for(let x of [-INNER_W/2-1,INNER_W/2+1])for(let z=-INNER_D/2;z<=INNER_D/2;z+=9){
+  box(roofGroup,x,TOP+2.2,z,.38,4.35,.38,brick);
+  box(roofGroup,x,TOP+.28,z,.72,.34,.72,stone);
+  box(roofGroup,x,TOP+4.28,z,.68,.28,.68,wood2);
+ }
 // Four roof wings wrap the courtyard; the centre remains open to the sky.
 for(let side of [-1,1]){for(let z of [-(D+INNER_D)/4,(D+INNER_D)/4]){const wing=box(roofGroup,side*W/4,TOP+4.5,z,W/2+2,.25,(D-INNER_D)/2+1,roofMat);wing.rotation.z=side===-1?-.20:.20}}
 for(let side of [-1,1]){const wing=box(roofGroup,side*(W+INNER_W)/4,TOP+4.5,0,(W-INNER_W)/2+1,.25,INNER_D+1,roofMat);wing.rotation.z=side===-1?-.20:.20}

@@ -21,6 +21,7 @@ scene.add(new THREE.HemisphereLight('#fff0d9','#716456',2.05));const sun=new THR
 const mat=(color,roughness=.85,metalness=0)=>new THREE.MeshStandardMaterial({color,roughness,metalness});const rubber=mat('#202323',.94);
 const groundMat=new THREE.MeshStandardMaterial({color:'#a99a7c',roughness:1}),plaster=new THREE.MeshStandardMaterial({color:'#e0d3b8',roughness:.9}),stone=new THREE.MeshStandardMaterial({color:'#9d6048',roughness:.88}),brick=new THREE.MeshStandardMaterial({color:'#a65f42',roughness:.92}),wood=new THREE.MeshStandardMaterial({color:'#684833',roughness:.85}),wood2=new THREE.MeshStandardMaterial({color:'#a77850',roughness:.8}),roofMat=new THREE.MeshStandardMaterial({color:'#a95836',roughness:.85}),glass=new THREE.MeshStandardMaterial({color:'#66877e',roughness:.3,metalness:.12}),dark=new THREE.MeshStandardMaterial({color:'#302e29',roughness:.9}),leaf=new THREE.MeshStandardMaterial({color:'#426b4b',roughness:.9});
 const site=new THREE.Group();scene.add(site);const building=new THREE.Group();site.add(building);
+const court=new THREE.Group();building.add(court);
 function box(p,x,y,z,w,h,d,m,cast=true){const o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);o.position.set(x,y,z);o.castShadow=cast;o.receiveShadow=true;p.add(o);return o}
 function sphere(p,x,y,z,r,m){const o=new THREE.Mesh(new THREE.SphereGeometry(r,14,10),m);o.position.set(x,y,z);o.castShadow=true;p.add(o);return o}
 function arch(p,x,y,z,w,h,depth,wallMat=plaster){const r=w*.36,spring=h*.55,s=new THREE.Shape();s.moveTo(-w/2,0);s.lineTo(w/2,0);s.lineTo(w/2,h);s.lineTo(-w/2,h);s.closePath();const hole=new THREE.Path();hole.moveTo(-r,.12);hole.lineTo(r,.12);hole.lineTo(r,spring);hole.absarc(0,spring,r,0,Math.PI,false);hole.lineTo(-r,.12);s.holes.push(hole);const mesh=new THREE.Mesh(new THREE.ExtrudeGeometry(s,{depth,bevelEnabled:false,curveSegments:28}),wallMat);mesh.position.set(x,y,z);mesh.castShadow=true;mesh.receiveShadow=true;p.add(mesh);const ring=new THREE.Mesh(new THREE.TorusGeometry(r+.025,.12,12,44,Math.PI),stone);ring.position.set(x,y+spring,z+depth+.035);p.add(ring);box(p,x-r-.07,y+spring/2,z+depth+.04,.22,spring,.24,stone);box(p,x+r+.07,y+spring/2,z+depth+.04,.22,spring,.24,stone)}
@@ -106,8 +107,7 @@ for(let i=0;i<8;i++){box(basement,-22+i*6.2,BASE+1.05,8,4.4,.22,9,wood);box(base
 const ramp=box(site,35,-2.2,22,10,.18,24,groundMat);ramp.rotation.x=-.12;
 
 
-// COURTYARD: open central landscaped court with seating, shade trees and flowering beds.
-const court=new THREE.Group();building.add(court);
+// COURTYARD: dedicated scene group is declared before any garden objects are added.
 for(let x of [-7.2,7.2])for(let z of [-13,13]){box(court,x,.18,z,3.1,.35,3.1,stone);for(let k=0;k<7;k++)sphere(court,x+(Math.random()-.5)*2,.62,z+(Math.random()-.5)*2,.38,leaf)}
 for(let z of [-8,0,8]){box(court,0,.12,z,12,.22,3.4,groundMat,false);for(let x of [-5,5]){box(court,x,.55,z,2.4,.22,.62,wood);box(court,x,.95,z-.24,2.4,.72,.16,wood2)}}
 for(let i=0;i<18;i++){const x=-8+Math.random()*16,z=-16+Math.random()*32;const petal=new THREE.MeshStandardMaterial({color:['#d87b92','#e9c65d','#f3eee0'][i%3]});sphere(court,x,.48,z,.14,petal)}

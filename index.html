@@ -354,7 +354,7 @@ for(let level=0;level<4;level++){const group=floorGroups[level];let idx=0;for(le
  for(const sx of [-1,1]){
   const post=box(group,x+sx*1.08,level*LEVEL+1.82,z+1.65,.075,1.62,.075,wood2);
   post.castShadow=true;
-  box(group,x+sx*1.08,level*LEVEL+1.05,z+1.65,.16,.10,.16,steel,false);
+  box(group,x+sx*1.08,level*LEVEL+1.05,z+1.65,.16,.10,.16,wood2,false);
  }
  const plate=new THREE.Mesh(new THREE.PlaneGeometry(2.8,.82),labelTexture(n[0],n[1]));plate.position.set(x,level*LEVEL+2.72,z+1.65);group.add(plate);idx++}}
 

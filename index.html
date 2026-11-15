@@ -18,7 +18,7 @@ const camera=new THREE.PerspectiveCamera(43,innerWidth/innerHeight,.1,350);camer
 const renderer=new THREE.WebGLRenderer({canvas,antialias:true,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio,1.7));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.13;
 const orbit=new OrbitControls(camera,canvas);orbit.target.set(0,9,0);orbit.enableDamping=true;orbit.maxPolarAngle=Math.PI*.49;orbit.minDistance=14;orbit.maxDistance=155;
 scene.add(new THREE.HemisphereLight('#fff0d9','#716456',2.05));const sun=new THREE.DirectionalLight('#ffe0bd',3.1);sun.position.set(-48,75,42);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);sun.shadow.camera.left=-90;sun.shadow.camera.right=90;sun.shadow.camera.top=90;sun.shadow.camera.bottom=-90;scene.add(sun);const fill=new THREE.DirectionalLight('#c6dedb',.8);fill.position.set(55,28,-45);scene.add(fill);const nightLights=new THREE.Group();scene.add(nightLights);let nightMode=false;
-const mat=(color,roughness=.85,metalness=0)=>new THREE.MeshStandardMaterial({color,roughness,metalness});const rubber=mat('#202323',.94);
+const mat=(color,roughness=.85,metalness=0)=>new THREE.MeshStandardMaterial({color,roughness,metalness});const rubber=mat('#202323',.94);const liftMetal=mat('#6c7770',.48,.42),liftDark=mat('#263431',.68),stepMat=mat('#c8b49a',.88);
 const groundMat=new THREE.MeshStandardMaterial({color:'#a99a7c',roughness:1}),plaster=new THREE.MeshStandardMaterial({color:'#e0d3b8',roughness:.9}),stone=new THREE.MeshStandardMaterial({color:'#9d6048',roughness:.88}),brick=new THREE.MeshStandardMaterial({color:'#a65f42',roughness:.92}),wood=new THREE.MeshStandardMaterial({color:'#684833',roughness:.85}),wood2=new THREE.MeshStandardMaterial({color:'#a77850',roughness:.8}),roofMat=new THREE.MeshStandardMaterial({color:'#a95836',roughness:.85}),glass=new THREE.MeshStandardMaterial({color:'#66877e',roughness:.3,metalness:.12}),dark=new THREE.MeshStandardMaterial({color:'#302e29',roughness:.9}),leaf=new THREE.MeshStandardMaterial({color:'#426b4b',roughness:.9});
 const site=new THREE.Group();scene.add(site);const building=new THREE.Group();site.add(building);
 const court=new THREE.Group();building.add(court);
@@ -163,7 +163,6 @@ for(let level=0;level<4;level++){const group=floorGroups[level];let idx=0;for(le
 
 
 // Lift lobby and stair flights are grouped by floor, so they disappear with every unselected level.
-const liftMetal=mat('#6c7770',.48,.42),liftDark=mat('#263431',.68),stepMat=mat('#c8b49a',.88);
 for(let level=0;level<4;level++){const g=floorGroups[level],y=level*LEVEL,lx=20,lz=-27;
  box(g,lx,y+1.55,lz,3.5,3.1,.34,stone);box(g,lx-1.02,y+1.5,lz+.2,.12,2.8,.12,liftMetal);box(g,lx+1.02,y+1.5,lz+.2,.12,2.8,.12,liftMetal);
  box(g,lx-.48,y+1.45,lz+.22,.92,2.7,.08,liftDark);box(g,lx+.48,y+1.45,lz+.22,.92,2.7,.08,liftDark);box(g,lx,y+2.98,lz+.25,2.05,.13,.14,wood2);

@@ -19,9 +19,8 @@ box(world,0,-.34,-34,38,.6,104,M.floor);
 const stallTargets=[];
 function stallBay(x,y,z,index,upper=false){const g=new THREE.Group();g.position.set(x,y,z);world.add(g);box(g,0,.76,-.65,1.34,.16,.82,M.wood);box(g,0,1.03,-.72,1.25,.42,.7,M.wood2);const colors=['#c94e34','#dfa52e','#6c914a','#b95850','#e0c66b'];for(let i=0;i<10;i++){sphere(g,-.48+(i%5)*.24,1.34+Math.floor(i/5)*.12,-.72+(i%2)*.12,.115,mat(colors[(i+index)%colors.length],.8))}box(g,0,2.05,-.35,1.28,.08,.82,index%3===0?M.fabric:index%3===1?M.trim:M.glass);box(g,0,2.42,-.08,1.2,.28,.12,M.wood);box(g,0,2.42,-.005,1.08,.17,.025,M.fabric,false);for(let xx of [-.62,.62])box(g,xx,1.65,-.18,.055,1.35,.055,M.wood);const target=new THREE.Mesh(new THREE.BoxGeometry(1.5,2.7,.9),new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false}));target.position.set(0,1.4,-.5);target.userData={title:['Vegetable Stall','Fruit & Flower Stall','Spice & Dry Goods','Local Provisions','Fresh Produce'][index%5],desc:(upper?'Upper gallery':'Ground arcade')+' · Vendor counter with displayed produce, timber shelving and a shaded arched shop bay.'};g.add(target);stallTargets.push(target)}
 for(const side of [-1,1]){const x=side*BX;
- for(let level=0;level<LEVELS;level++){const y=level*FLOOR;box(world,x,y+FLOOR/2,-34,BW,FLOOR,DEPTH,M.plaster);box(world,x,y+FLOOR/2,Z0-.34,BW-.4,FLOOR-.2,.16,M.dark,false);box(world,x,y+.16,-34,BW+.28,.32,DEPTH+.3,M.stone);
-  for(let bay=0;bay<5;bay++){const bx=x-BW/2+.85+bay*1.7;makeArch(world,bx,Z0,FLOOR-.18,0,0); /* arch dimensions reset below */ }
-  // Arched openings are cut into each level's continuous masonry fascia.
+ for(let level=0;level<LEVELS;level++){const y=level*FLOOR;box(world,x,y+FLOOR/2,-75.8,BW,FLOOR,.25,M.plaster);box(world,x,y+.16,-34,BW+.28,.32,DEPTH+.3,M.stone);
+    // Arched openings are cut into each level's continuous masonry fascia.
   for(let bay=0;bay<5;bay++){const bx=x-BW/2+.85+bay*1.7;makeArch(world,bx,y+Z0,1.58,FLOOR-.2,.46);stallBay(bx,y,Z0-.05,bay+level*5,level>0)}
   box(world,x,y+FLOOR-.12,-34,BW+.3,.24,DEPTH+.4,M.stone);box(world,x,y+3.7,Z0+.5,BW,.13,.18,M.wood2);for(let k=0;k<=12;k++){const px=x-BW/2+k*BW/12;box(world,px,y+3.35,Z0+.55,.05,.7,.06,M.trim,false)}
   // Interior floor stalls: two rows beyond the facade stalls, so the floor plates are occupied, not hollow.

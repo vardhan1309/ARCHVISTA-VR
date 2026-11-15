@@ -1,13 +1,146 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#101923"><meta name="description" content="Poorna Market redevelopment 360 degree VR tours for Meta Quest 3"><title>Poorna Market VR — ARCHVISTA</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="styles.css?v=3d-market-dashboard-20261115-2"><script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script></head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ARCHVISTA VR · Poorna Market</title>
+<meta name="theme-color" content="#101923">
+<script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+<script src="https://raw.githubusercontent.com/vero-prog-hub/Market-360/main/js/data.js"></script>
+<script src="https://raw.githubusercontent.com/vero-prog-hub/Market-360/main/js/components.js"></script>
+
+<style>
+@font-face{font-family:"Market Telugu";src:url("https://raw.githubusercontent.com/vero-prog-hub/Market-360/main/assets/fonts/NotoSansTelugu-Regular.ttf") format("truetype");font-display:swap}
+::selection{background:var(--gold);color:var(--ink)}
+#help .volume-row{display:grid;grid-template-columns:auto 1fr auto;gap:12px}
+#help input[type="range"]{width:100%;min-width:80px;height:32px}
+#help .music-note{font-size:12px;line-height:1.5;color:#e8d4c5;margin:8px 0 16px}
+#audio-status{font-size:13px;line-height:1.5;color:#ffe0a1}
+#audio-status:empty{display:none}
+#help .glass{overscroll-behavior:contain}
+#intro small{opacity:.85!important}
+
+:root{--gold:#78d7c4;--ink:#1f2d3a;--rose:#285b61}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:#101923}
+.off{display:none!important}
+button{font:inherit;cursor:pointer;border:0}
+#intro{position:fixed;inset:0;z-index:30;display:flex;flex-direction:column;align-items:center;overflow-y:auto;overscroll-behavior:contain;text-align:center;color:#fff;padding:24px;
+ background:radial-gradient(circle at 25% 20%,#78d7c455,transparent 45%),radial-gradient(circle at 80% 85%,#285b6166,transparent 48%),linear-gradient(160deg,#1f2d3a,#101923);transition:opacity .9s}
+#intro>div{flex:0 0 auto;max-width:100%;margin-block:auto}
+body:not(.market-entered) .a-enter-vr,body:not(.market-entered) .a-enter-ar{display:none!important}
+#intro.fade{opacity:0;pointer-events:none}
+#intro h1{font:600 clamp(40px,9vw,88px)/1 Georgia,"Times New Roman",serif;margin:0 0 10px;letter-spacing:.02em;
+ background:linear-gradient(90deg,#78d7c4,#3cae9b,#a7f0e3);-webkit-background-clip:text;background-clip:text;color:transparent}
+#intro p{margin:0 auto 28px;max-width:34ch;font-size:clamp(15px,2.4vw,19px);opacity:.88;line-height:1.5}
+.cta{background:linear-gradient(90deg,#78d7c4,#3cae9b);color:var(--ink);font-weight:700;font-size:18px;padding:15px 34px;border-radius:999px;
+ box-shadow:0 8px 30px #78d7c455;transition:transform .2s}
+.cta:hover{transform:translateY(-2px) scale(1.03)}
+.ghost{background:#ffffff1a;color:#fff;padding:13px 22px;border-radius:999px;margin-left:10px;border:1px solid #ffffff44;backdrop-filter:blur(6px)}
+.row{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;row-gap:12px}
+#intro small{display:block;margin-top:26px;opacity:.6;font-size:13px}
+#hud{position:fixed;inset:0;z-index:10;pointer-events:none;font-size:14px}
+#hud>*{pointer-events:auto}
+.glass{background:#1f2d3acc;color:#fff;border:1px solid #ffffff22;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:0 10px 30px #0006}
+.brand{position:absolute;top:14px;left:14px;padding:9px 16px;border-radius:999px;font-weight:600;font-family:Georgia,serif;letter-spacing:.03em}
+.tools{position:absolute;top:14px;right:14px;display:flex;gap:8px}
+.tools button{width:42px;height:42px;border-radius:50%;font-size:18px;color:#fff}
+.tools #lighting{width:auto;display:flex;align-items:center;gap:7px;padding:0 13px;font-size:13px;border-radius:999px}
+#lighting svg{width:19px;height:19px;flex-shrink:0}
+#lighting[aria-pressed="true"]{background:var(--gold);color:var(--ink)}
+@media(max-width:480px){.lighting-label{display:none}.tools #lighting{width:44px;padding:0;justify-content:center}.brand{max-width:calc(100vw - 180px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}}
+#tour{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);display:flex;align-items:center;gap:8px;padding:6px;border-radius:999px;max-width:92vw}
+#tour button{width:40px;height:40px;border-radius:50%;background:var(--gold);color:var(--ink);font-size:22px;font-weight:700}
+#counter{padding:0 10px;min-width:150px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:55vw}
+#card{position:absolute;left:50%;bottom:84px;transform:translate(-50%,16px);width:min(440px,92vw);padding:16px 20px;border-radius:18px;opacity:0;pointer-events:none!important;transition:.35s}
+#card.show{opacity:1;transform:translate(-50%,0)}
+#card h2{margin:0 0 4px;color:var(--gold);font:600 20px Georgia,serif}
+#card p{margin:0;opacity:.9;line-height:1.45}
+#toast{position:absolute;top:70px;left:50%;transform:translateX(-50%);padding:10px 18px;border-radius:999px;text-align:center;transition:opacity 1s;max-width:92vw}
+#help{position:fixed;inset:0;z-index:40;display:grid;place-items:center;background:#0008}
+#help .glass{padding:24px 28px;border-radius:20px;max-width:380px;line-height:1.8}
+#help h2{margin:0 0 8px;font:600 20px Georgia,serif;color:var(--gold)}
+#help b{color:var(--gold)}
+button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-offset:4px}
+button:disabled{cursor:wait;opacity:.65}
+.tools button,#tour button{min-width:44px;min-height:44px}
+#card{transition:opacity .35s,transform .35s}
+#status{min-height:1.5em;margin:16px auto 0!important;font-size:14px!important;max-width:48ch!important}
+#retry:not([hidden]){display:inline-block;margin-top:12px;color:var(--gold)}
+#help{border:0;color:#fff;max-width:none;max-height:none;margin:0;width:100%;height:100%;padding:20px}
+#help:not([open]){display:none}
+#help::backdrop{background:#0008}
+#help .glass{max-height:90dvh;overflow:auto}
+#help label{display:flex;align-items:center;gap:10px;min-height:44px;margin:12px 0}
+#help input{accent-color:var(--gold);width:18px;height:18px}
+#toast{pointer-events:none}
+button{touch-action:manipulation}
+.brand{top:max(14px,env(safe-area-inset-top));left:max(14px,env(safe-area-inset-left))}
+.tools{top:max(14px,env(safe-area-inset-top));right:max(14px,env(safe-area-inset-right))}
+#tour{bottom:max(18px,env(safe-area-inset-bottom))}
+@media(max-width:480px){.brand{padding:10px 12px;font-size:13px}#toast{top:76px;width:92vw;border-radius:18px}#intro small{opacity:.8}.ghost{margin-left:0}}
+@media(prefers-reduced-motion:reduce){#intro,#card,.cta{transition:none}.cta:hover{transform:none}}
+</style>
+</head>
 <body>
-<div id="app"><aside class="sidebar"><div class="logo"><span class="logo-mark">◎</span><span><strong>ARCHVISTA</strong><small>POORNA MARKET PROJECT</small></span></div><div class="side-label">POORNA MARKET</div><button class="nav active" data-page="dashboard">▦ <span>Market tour</span></button><button class="nav" data-page="editor">◇ <span>Tour editor</span></button><div class="side-bottom"><span class="online-dot"></span> Meta Quest 3 • Demo tour <p>Sample panoramas • Mono 360°</p></div></aside>
-<main class="main"><section id="launch" class="page launch-page active">
-<div class="launch-top"><div class="launch-brand"><span class="logo-mark">◎</span><span><strong>ARCHVISTA</strong><small>IMMERSIVE ARCHITECTURE</small></span></div><span class="launch-tag">VISAKHAPATNAM · INDIA</span></div>
-<div class="launch-hero"><div class="launch-copy"><span class="eyebrow">POORNA MARKET REDEVELOPMENT · VR EXPERIENCE</span><h1>Reimagine the market.<br><span>Experience it in 360°.</span></h1><p class="launch-lead">ARCHVISTA VR is an interactive architectural walkthrough concept for exploring the proposed redevelopment of Poorna Market, Visakhapatnam — from pedestrian streets and vendor areas to shared public spaces and market interiors.</p><div class="launch-actions"><button id="launchEnter" class="button primary">Enter project ↗</button><button id="launchLearn" class="button subtle">Explore the concept ↓</button></div><div class="launch-meta"><span>◎ MONO 360° PANORAMAS</span><span>⌁ GUIDED + FREE EXPLORATION</span><span>◉ META QUEST 3 TARGET</span></div></div><div class="launch-visual"><img src="assets/arrival-court.jpg" alt="Sample panoramic architectural arrival view"><div class="launch-image-label"><span>01 / SAMPLE VIEWPOINT</span><strong>Arrival Court</strong><small>Illustrative imagery · not the final Poorna Market design</small></div></div></div>
-<div id="launchDetails" class="launch-details"><div class="launch-section-heading"><span class="eyebrow">ABOUT THE PROJECT</span><h2>A market experienced as a connected place.</h2><p>The experience is designed to communicate an architectural proposal spatially, rather than through still renders alone.</p></div><div class="launch-feature-grid"><article><span>01</span><h3>Explore the streets</h3><p>Move between arrival points, pedestrian routes and market edges through linked 360° viewpoints.</p></article><article><span>02</span><h3>Discover market spaces</h3><p>Preview vendor zones, market halls and community-oriented interiors as the design develops.</p></article><article><span>03</span><h3>Navigate spatially</h3><p>Use viewpoint hotspots, a location map and a guided sequence or choose destinations freely.</p></article><article><span>04</span><h3>Experience in VR</h3><p>Designed for mono equirectangular Enscape panoramas and intended for immersive viewing on Meta Quest 3.</p></article></div><div class="launch-disclaimer"><strong>Prototype status</strong><p>The current site uses sample images and illustrative map positions to test the interface. These are not verified Poorna Market renders or surveyed camera locations. Final project imagery and the master plan will replace them.</p></div><button id="launchEnterBottom" class="button primary">Open Poorna Market experience ↗</button></div>
-<footer class="launch-footer"><span>ARCHVISTA VR</span><span>ARCHITECTURE · IMMERSION · PLACE</span><span>PROTOTYPE / 2026</span></footer>
-</section><section id="dashboard" class="page"><header class="topbar"><span>WORKSPACE <b>/</b> PROJECTS</span><div class="avatar">AV</div></header><div class="intro"><div><div class="eyebrow">VISAKHAPATNAM · MARKET REDEVELOPMENT</div><h1>Poorna Market<span class="accent">.</span></h1><p>The Living Market Spine — walk through a generated 3D market, discover individual shops and explore the architectural proposal.</p></div><button id="createProject" class="button primary">＋ New project</button></div><div class="feature-card"><img src="assets/arrival-court.jpg" alt="Contemporary architectural panoramic interior"><div class="feature-fade"></div><div class="feature-content"><span class="chip">POORNA MARKET · INTERACTIVE 3D CONCEPT</span><h2>Step inside the future market.</h2><p>Walk through a generated market streetscape, explore shopfronts and discover the public spaces. This is a conceptual model that will be refined with your architectural drawings.</p><button id="featuredOpen" class="button primary">Enter 3D market ↗</button></div></div><div class="experience-switch"><div><span class="eyebrow">CHOOSE YOUR EXPERIENCE</span><h2>Explore Poorna Market</h2><p>Start with the generated walkable 3D market, or switch to your linked Enscape panorama tour.</p></div><div class="mode-actions"><button id="start3DMarket" class="button primary">▦ Enter 3D market</button><button id="start360Tour" class="button subtle">◉ 360° panorama tour</button></div></div><div class="section-head"><div><h2>Your market experience</h2><p>3D conceptual streetscape · linked 360° panorama presentation</p></div><span class="count">01 MARKET EXPERIENCE</span></div><div id="projectGrid" class="project-grid"></div></section>
-<section id="viewer" class="page viewer-page"><div class="viewer-stage"><div class="pano-container"><a-scene id="market3DScene" embedded vr-mode-ui="enabled: true" renderer="colorManagement: true; antialias: true" loading-screen="enabled: false" style="display:none"><a-entity id="market3DCamera" position="0 1.65 9" camera look-controls wasd-controls="acceleration:18"></a-entity></a-scene><div id="viewerStatus" class="viewer-status" role="status"><span class="viewer-status-spinner"></span><strong id="viewerStatusTitle">Preparing panorama…</strong><small id="viewerStatusText">Loading the selected 360° scene</small><button id="viewerRetry" type="button">Retry loading</button></div><a-scene id="vrScene" embedded vr-mode-ui="enabled: true; enterVRButton: #enterVR; enterARButton: #noAR" renderer="colorManagement: true; antialias: true" device-orientation-permission-ui="enabled: false" loading-screen="enabled: false"><a-assets timeout="30000"></a-assets><a-sky id="sky" src="assets/arrival-court.jpg" rotation="0 -90 0"></a-sky><a-entity id="rig"><a-camera id="camera" position="0 0 0" look-controls="reverseMouseDrag: false; touchEnabled: true" wasd-controls="enabled: false"><a-cursor id="cursor" raycaster="objects: .hotspot, .vr-control" fuse="false" material="color: #78d7c4; shader: flat; opacity: .8" geometry="primitive: ring; radiusInner: 0.008; radiusOuter: 0.013" visible="false"></a-cursor></a-camera><a-entity id="leftHand" laser-controls="hand: left" raycaster="objects: .hotspot, .vr-control; far: 15" line="color: #78d7c4; opacity: .65"></a-entity><a-entity id="rightHand" laser-controls="hand: right" raycaster="objects: .hotspot, .vr-control; far: 15" line="color: #78d7c4; opacity: .65"></a-entity></a-entity><a-entity id="sceneHotspots"></a-entity><a-entity id="vrMenu" visible="false" position="0 -0.4 -1.7"></a-entity><a-entity id="vrMiniMap" visible="false"></a-entity><a-entity id="vrSpaceInfo" visible="false"></a-entity></a-scene></div><div class="viewer-shade"></div><div class="viewer-top"><button id="backDashboard" class="round-btn" title="Back to projects">←</button><div><strong id="projectTitle">Poorna Market</strong><small id="roomTitle">Arrival Court · 01 / 08</small></div><div class="push"></div><span id="modeIndicator" class="viewer-mode">FREE EXPLORATION</span><button id="viewMode3D" class="glass-btn">▦ 3D Market</button><button id="toggleMode" class="glass-btn">↔ Guided / Free</button><button id="planBtn" class="glass-btn">▦ Market map</button><button id="enterVR" class="button primary">◉ Enter VR</button></div><div class="viewer-mid"><div class="view-help">DRAG TO LOOK AROUND <span>↔</span></div></div><div class="chapter-panel"><span id="chapterLabel">CHAPTER 01 / URBAN ARRIVAL</span><p id="chapterText">Discover the redeveloped market.</p><div class="chapter-buttons"><button id="prevStop" class="glass-btn">← Previous</button><button id="nextStop" class="glass-btn">Next stop →</button></div></div><div id="spaceInfoCard" class="space-info-card"><button id="spaceInfoToggle" class="space-info-toggle">ⓘ SPACE DETAILS</button><div id="spaceInfoContent"><strong id="spaceInfoTitle">Arrival Court</strong><p id="spaceInfoText">Explore this market viewpoint.</p><span id="spaceInfoType">SAMPLE VIEWPOINT</span></div></div><div class="viewer-minimap"><div class="mini-head"><span>⌖ YOUR LOCATION</span><button id="expandMiniMap" title="Open full map">⤢</button></div><div class="mini-canvas"><div class="mini-market">MARKET SPINE</div><div id="miniMapPins"></div></div><div id="miniLocation" class="mini-location">Arrival Court</div><small>ILLUSTRATIVE PLAN</small></div><div id="teleportFade" class="teleport-fade"></div><div class="explore-tools"><button id="allFilter" class="filter-chip selected">All</button><button id="streetFilter" class="filter-chip">Streets</button><button id="interiorFilter" class="filter-chip">Interiors</button><button id="facilitiesFilter" class="filter-chip">Facilities</button></div><div id="sceneBar" class="scene-bar"></div><div id="market3DInfo" class="market3d-info" hidden><strong>POORNA MARKET · CONCEPT MODEL</strong><span>Tap a shopfront to explore its function. Use WASD / arrow keys to walk and drag to look.</span></div><div class="viewer-foot" id="viewerFoot">360° PANORAMA <span>•</span> QUEST 3 COMPATIBLE <span>•</span> A-FRAME / WEBXR</div></div></section>
-<section id="editor" class="page editor-page"><div class="editor-header"><div><span class="eyebrow">CREATE / CONFIGURE</span><h2>Tour editor</h2></div><div class="editor-head-actions"><button id="importJson" class="button subtle">Import JSON</button><button id="exportJson" class="button primary">↓ Export tour JSON</button><input id="jsonFile" type="file" accept="application/json,.json" hidden></div></div><div class="editor-columns"><div class="scene-sidebar"><div class="row-spread"><h3>Scenes</h3><span id="sceneCount">04</span></div><div id="editorSceneList"></div><label class="upload-btn">＋ Add panorama<input type="file" id="imageFile" accept="image/jpeg,image/png,image/webp" hidden></label><p class="hint">Enscape mono equirectangular 2:1 JPEG or WebP.</p></div><div class="editor-preview"><div id="editorImage" class="editor-image"><div class="editor-overlay"><span id="editRoomName">Atrium</span><span>Sample imagery · replace with Enscape mono 2:1 panoramas when ready</span></div></div><div class="editor-actionbar"><button id="addHotspot" class="button primary">＋ Add hotspot</button><button id="previewTour" class="button subtle">▶ Preview tour</button></div><div class="editor-notice">Changes remain in this browser until exported. GitHub Pages cannot save edits to your repository automatically.</div></div><div class="inspector"><span class="eyebrow">PROPERTIES</span><h3>Scene settings</h3><label>Scene name<input id="sceneNameInput" maxlength="60" placeholder="Scene name"></label><label>Image path / hosted URL<input id="sceneImageInput" placeholder="assets/my-room.jpg"></label><label>Destination for new hotspot<select id="hotspotDestination"></select></label><label>Hotspot label<input id="hotspotLabel" maxlength="45" placeholder="Go to kitchen"></label><div class="two-inputs"><label>Yaw (°)<input id="hotspotYaw" type="number" min="-180" max="180" value="40"></label><label>Pitch (°)<input id="hotspotPitch" type="number" min="-70" max="70" value="-5"></label></div><div id="hotspotList" class="hotspot-list"></div><button id="saveScene" class="button subtle full">Save scene details</button><p class="hint">Yaw sets left/right position, pitch sets vertical position. Use preview to check hotspot alignment.</p></div></div></section></main></div>
-<div id="floorModal" class="modal hidden" role="dialog" aria-modal="true" aria-label="Floor plan navigation"><div class="modal-backdrop" data-close="floor"></div><div class="floor-card"><div class="row-spread"><div><span class="eyebrow">SPATIAL NAVIGATION</span><h2>Explore the market map</h2><p>Sample location markers — not measured camera positions.</p></div><button id="closeFloor" class="round-btn">×</button></div><div class="plan-body"><div class="plan-illustration market-plan"><span class="plan-disclaimer">ILLUSTRATIVE MASTER PLAN • CAMERA POSITIONS NOT SURVEYED</span><div class="floor-outline"><div class="plan-room big-room">MARKET SPINE</div><div class="plan-room room-2">STREET EDGE</div><div class="plan-room room-3">VENDOR ZONE</div><div class="plan-room room-4">PUBLIC COURT</div></div><div id="planPins"></div></div><div class="map-directory"><div class="eyebrow">VIEWPOINT DIRECTORY</div><div class="map-filters"><button data-map-filter="all" class="active">All</button><button data-map-filter="street">Street</button><button data-map-filter="interior">Interior</button><button data-map-filter="facilities">Facilities</button></div><div id="planSceneList" class="plan-scene-list"></div></div></div></div></div>
-<div id="toast" class="toast" role="status"></div><script src="app.js?v=3d-market-dashboard-20261115-2"></script></body></html>
+
+<div id="intro">
+ <div>
+  <h1>Poorna Market</h1>
+  <p>Walk flower-lined lanes, discover local crafts and linger in a reimagined Poorna Market.</p>
+  <div class="row">
+   <button class="cta" id="enter" disabled>Enter the Market</button>
+   <button class="ghost" id="guided" disabled>Guided market walk</button>
+  </div>
+  <small>🎧 Best with headphones · A modern imagining of Visakhapatnam · VR headset supported</small>
+  <p id="status" role="status" aria-live="polite">Loading the market…</p>
+  <a id="retry" href="" hidden>Reload the market</a>
+  <noscript><p>Enable JavaScript to explore the 3D market.</p></noscript>
+ </div>
+</div>
+
+<div id="hud" class="off">
+ <div class="brand glass">🌼 Poorna Market</div>
+ <div class="tools"><button id="lighting" class="glass" title="Evening lighting" aria-label="Evening lighting" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M20.5 14a8.5 8.5 0 0 1-10.4-10.5A8.5 8.5 0 1 0 20.5 14Z"/></svg><span class="lighting-label">Evening</span></button><button id="snd" class="glass" title="Mute sound" aria-label="Mute sound" aria-pressed="false">🔊</button><button id="hlp" class="glass" title="Help" aria-label="How to explore" aria-haspopup="dialog">?</button></div>
+ <div id="toast" class="glass">Drag to look · WASD to walk · Tap the ground to glide · Tap a stall</div>
+ <div id="card" class="glass" role="status" aria-live="polite"><h2 id="ct"></h2><p id="cd"></p></div>
+ <nav id="tour" class="glass" aria-label="Stall tour"><button id="prev" aria-label="Previous stall">‹</button><span id="counter">Stroll freely or tour the shops</span><button id="next" aria-label="Next stall">›</button></nav>
+</div>
+
+<dialog id="help" aria-labelledby="help-title"><div class="glass">
+ <h2 id="help-title">How to explore</h2>
+ <b>Look</b> – drag mouse / finger, or turn your head in VR<br>
+ <b>Walk</b> – W A S D or arrow keys<br>
+ <b>Glide</b> – click / tap the ground, or point &amp; trigger in VR<br>
+ <b>Stalls</b> – click a stall for its story; use ‹ › to tour<br>
+ <b>VR</b> – tap the goggles icon bottom-right<br>
+ <b>Evening</b> – use the moon button to switch the sky and street lighting<br>
+ <label><input id="motion" type="checkbox">Animate petals and gliding</label>
+ <label class="volume-row" for="volume">Music <input id="volume" name="volume" type="range" min="0" max="100" value="30" aria-label="Music volume"><output id="volume-value" for="volume">30%</output></label>
+ <p class="music-note">Krishna flute theme · supplied recording.</p>
+ <p id="audio-status" role="status" aria-live="polite"></p>
+ <div style="text-align:right"><button class="cta" id="hx" style="font-size:15px;padding:9px 22px">Got it</button></div>
+</div></dialog>
+
+<a-scene renderer="antialias:true;colorManagement:true;physicallyCorrectLights:true;maxCanvasWidth:1920;maxCanvasHeight:1440" fog="type:linear;color:#ded4bd;near:38;far:130" loading-screen="enabled:false" device-orientation-permission-ui="enabled:false">
+ <a-entity id="world"></a-entity>
+ <a-entity id="petals" petals></a-entity>
+ <a-entity id="panel" visible="false">
+  <a-plane width="2.6" height="1.2" color="#1f2d3a" opacity=".9"></a-plane>
+  <a-text id="pt" font="https://raw.githubusercontent.com/vero-prog-hub/Market-360/main/vendor/Roboto-msdf.json" font-image="https://raw.githubusercontent.com/vero-prog-hub/Market-360/main/vendor/Roboto-msdf.png" align="center" color="#78d7c4" width="2.6" position="0 .42 .02"></a-text>
+  <a-text id="pd" font="https://raw.githubusercontent.com/vero-prog-hub/Market-360/main/vendor/Roboto-msdf.json" font-image="https://raw.githubusercontent.com/vero-prog-hub/Market-360/main/vendor/Roboto-msdf.png" align="center" baseline="top" color="#ffffff" width="2.2" wrap-count="34" position="0 .25 .02"></a-text>
+ </a-entity>
+ <a-entity id="rig" position="0 0 19">
+  <a-entity id="cam" position="0 1.6 0" camera="fov:68;near:0.2;far:300" look-controls="enabled:false" wasd-controls="acceleration:28;enabled:false" bounds cursor="rayOrigin:mouse" raycaster="objects:.clickable;far:40"></a-entity>
+  <a-entity laser-controls="hand:right" raycaster="objects:.clickable;far:40"></a-entity>
+  <a-entity laser-controls="hand:left" raycaster="objects:.clickable;far:40"></a-entity>
+ </a-entity>
+</a-scene>
+
+
+<script src="https://raw.githubusercontent.com/vero-prog-hub/Market-360/main/js/neighborhood.js"></script>
+<script src="https://raw.githubusercontent.com/vero-prog-hub/Market-360/main/js/scene.js"></script>
+<script src="https://raw.githubusercontent.com/vero-prog-hub/Market-360/main/js/audio.js"></script>
+<script src="https://raw.githubusercontent.com/vero-prog-hub/Market-360/main/js/app.js"></script>
+</body>
+</html>

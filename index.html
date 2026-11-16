@@ -486,10 +486,10 @@ renderer.xr.enabled=true;
 renderer.xr.setReferenceSpaceType('local-floor');
 let activeXRSession=null;
 async function enterVR(){
- if(!navigator.xr){$('#description').textContent='WebXR is unavailable in this browser. Open the HTTPS site in Meta Quest Browser, enable VR permissions, then try again.';return}
+ if(!navigator.xr){$('#description').textContent='WebXR is unavailable in this browser. For headset VR, open this HTTPS page in Meta Quest Browser on Quest 3.';return}
  try{
-  const supported=await navigator.xr.isSessionSupported('immersive-vr');
-  if(!supported){$('#description').textContent='This browser/device does not support immersive VR. Open ARCHVISTA in Meta Quest Browser on Quest 3.';return}
+  // requestSession must be called directly from the click gesture; awaiting a support
+  // probe first can consume transient user activation and cause NotAllowedError.
   const session=await navigator.xr.requestSession('immersive-vr',{optionalFeatures:['local-floor','bounded-floor']});
   activeXRSession=session;
   await renderer.xr.setSession(session);
@@ -497,7 +497,8 @@ async function enterVR(){
   $('#description').textContent='VR active. Use your headset controllers to look around; exit VR from the Quest system menu.';
   session.addEventListener('end',()=>{activeXRSession=null;orbit.enabled=true;$('#description').textContent='VR session ended. Select ENTER VR to re-enter.'});
  }catch(e){
-  $('#description').textContent='VR could not start: '+(e?.message||'permission or headset error')+'. Use Meta Quest Browser over HTTPS and allow the VR permission.';
+  const reason=e?.name==='NotAllowedError'?'VR permission was denied or the click permission was lost. Press ENTER VR directly inside Meta Quest Browser.':e?.name==='NotSupportedError'?'This browser or headset does not support immersive-vr. Use Meta Quest Browser on Quest 3.':(e?.message||'headset or permission error');
+  $('#description').textContent='VR could not start: '+reason;
  }
 }
 $('#vr').onclick=enterVR;

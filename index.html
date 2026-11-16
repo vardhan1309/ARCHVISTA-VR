@@ -14,7 +14,7 @@ window.addEventListener('unhandledrejection',function(e){const el=document.getEl
 <script type="module">
 import * as THREE from 'three';import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 const $=s=>document.querySelector(s),canvas=$('#view'),scene=new THREE.Scene();scene.background=new THREE.Color('#b8c0bd');scene.fog=new THREE.Fog('#b8c0bd',90,230);
-const camera=new THREE.PerspectiveCamera(43,innerWidth/innerHeight,.1,350);camera.position.set(65,49,76);
+const camera=new THREE.PerspectiveCamera(43,innerWidth/innerHeight,.1,350);camera.position.set(65,49,76);const cameraRig=new THREE.Group();scene.add(cameraRig);cameraRig.add(camera);
 const renderer=new THREE.WebGLRenderer({canvas,antialias:true,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio,1.7));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.13;
 const orbit=new OrbitControls(camera,canvas);orbit.target.set(0,9,0);orbit.enableDamping=true;orbit.maxPolarAngle=Math.PI*.49;orbit.minDistance=14;orbit.maxDistance=155;
 scene.add(new THREE.HemisphereLight('#fff0d9','#716456',2.05));const sun=new THREE.DirectionalLight('#ffe0bd',3.1);sun.position.set(-48,75,42);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);sun.shadow.camera.left=-90;sun.shadow.camera.right=90;sun.shadow.camera.top=90;sun.shadow.camera.bottom=-90;scene.add(sun);const fill=new THREE.DirectionalLight('#c6dedb',.8);fill.position.set(55,28,-45);scene.add(fill);const nightLights=new THREE.Group();scene.add(nightLights);const floorNightGroups=[];for(let i=0;i<4;i++){const fg=new THREE.Group();nightLights.add(fg);floorNightGroups.push(fg)}const siteNight=new THREE.Group();nightLights.add(siteNight);let nightMode=false;
@@ -492,10 +492,12 @@ async function enterVR(){
   // probe first can consume transient user activation and cause NotAllowedError.
   const session=await navigator.xr.requestSession('immersive-vr',{optionalFeatures:['local-floor','bounded-floor']});
   activeXRSession=session;
+  // Put the headset user inside the central courtyard. The desktop orbit camera
+  // starts far outside the building; reusing that position makes VR look empty.
+  walking=false;orbit.enabled=false;camera.position.set(0,0,0);camera.rotation.set(0,0,0);cameraRig.position.set(0,0,19);cameraRig.rotation.set(0,0,0);
   await renderer.xr.setSession(session);
-  walking=false;orbit.enabled=false;
   $('#description').textContent='VR active. Use your headset controllers to look around; exit VR from the Quest system menu.';
-  session.addEventListener('end',()=>{activeXRSession=null;orbit.enabled=true;$('#description').textContent='VR session ended. Select ENTER VR to re-enter.'});
+  session.addEventListener('end',()=>{activeXRSession=null;cameraRig.position.set(0,0,0);camera.position.set(65,49,76);orbit.target.set(0,8,0);orbit.enabled=true;orbit.update();$('#description').textContent='VR session ended. Select ENTER VR to re-enter.'});
  }catch(e){
   const reason=e?.name==='NotAllowedError'?'VR permission was denied or the click permission was lost. Press ENTER VR directly inside Meta Quest Browser.':e?.name==='NotSupportedError'?'This browser or headset does not support immersive-vr. Use Meta Quest Browser on Quest 3.':(e?.message||'headset or permission error');
   $('#description').textContent='VR could not start: '+reason;
